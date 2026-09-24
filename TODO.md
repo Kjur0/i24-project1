@@ -1,1 +1,1 @@
-- [ ] SPECDOC
+- [x] SPECDOC
