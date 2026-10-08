@@ -1,0 +1,69 @@
+import { SignupForm } from "@/components/forms/signup"
+import { signupFormSchema } from "@/components/forms/schemas"
+import { userExists, users } from "@/lib/db"
+import { sendOTP } from "@/lib/otp"
+import { cookies, headers } from "next/headers"
+import * as z from "zod"
+import { redirect } from "next/navigation"
+
+export default function SignupPage() {
+  return (
+    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+      <div className="w-full max-w-sm">
+        <SignupForm signup={signup} />
+      </div>
+    </div>
+  )
+}
+
+async function signup(data: z.infer<typeof signupFormSchema>): Promise<void> {
+  "use server"
+
+  const parsed = await signupFormSchema.safeParseAsync(data)
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.message)
+  }
+
+  const validEmail = parsed.data.email.toLowerCase()
+
+  if (await userExists(validEmail)) {
+    throw new Error("Użytkownik o podanym adresie email już istnieje")
+  }
+
+  await users.insertOne({
+    email: validEmail,
+    role: "user",
+    username: parsed.data.username,
+    verified: false,
+    sessionTokens: [],
+    authn: [],
+    createdAt: new Date(),
+  })
+
+  const headerList = await headers()
+  const forwardedFor = headerList.get("x-forwarded-for")
+  const clientIp = forwardedFor
+    ? forwardedFor.split(",")[0]
+    : headerList.get("x-real-ip") || "127.0.0.1"
+
+  try {
+    await sendOTP(validEmail, clientIp)
+
+    const cookieStore = await cookies()
+    cookieStore.set("signup_email", validEmail, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 15,
+      path: "/signup/verify",
+    })
+
+    redirect("/signup/verify")
+  } catch (error) {
+    console.dir(error)
+    throw new Error(
+      "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później."
+    )
+  }
+}
