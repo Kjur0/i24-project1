@@ -63,13 +63,15 @@ export async function logout() {
   cookieStore.delete("session_token")
 }
 
-type CurrentUser = Pick<User, "email" | "username" | "role" | "verified" | "createdAt"> & { id: string }
+type CurrentUser = Pick<
+  User,
+  "email" | "username" | "role" | "verified" | "createdAt"
+> & { id: string }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const cookieStore = await cookies()
 
-  if (!(await isAuthenticated()))
-    return null
+  if (!(await isAuthenticated())) return null
 
   const userId = cookieStore.get("user_id")?.value
   const sessionToken = cookieStore.get("session_token")?.value
@@ -83,7 +85,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (!user) {
     return null
   }
-  
+
   return {
     id: user._id.toString(),
     email: user.email,

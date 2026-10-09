@@ -1,5 +1,5 @@
 import { SignupForm } from "@/components/forms/signup"
-import { signupFormSchema } from "@/components/forms/schemas"
+import { formResponse, signupFormSchema } from "@/components/forms/schemas"
 import { userExists, users } from "@/lib/db"
 import { sendOTP } from "@/lib/otp"
 import { cookies, headers } from "next/headers"
@@ -16,19 +16,24 @@ export default function SignupPage() {
   )
 }
 
-async function signup(data: z.infer<typeof signupFormSchema>): Promise<void> {
+async function signup(
+  data: z.infer<typeof signupFormSchema>
+): Promise<formResponse> {
   "use server"
 
   const parsed = await signupFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
-    throw new Error(parsed.error.message)
+    return { success: false, error: parsed.error.message }
   }
 
   const validEmail = parsed.data.email.toLowerCase()
 
   if (await userExists(validEmail)) {
-    throw new Error("Użytkownik o podanym adresie email już istnieje")
+    return {
+      success: false,
+      error: "Użytkownik o podanym adresie email już istnieje",
+    }
   }
 
   await users.insertOne({
@@ -58,12 +63,11 @@ async function signup(data: z.infer<typeof signupFormSchema>): Promise<void> {
       maxAge: 60 * 15,
       path: "/signup/verify",
     })
-
-    redirect("/signup/verify")
   } catch (error) {
     console.dir(error)
     throw new Error(
       "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później."
     )
   }
+  redirect("/signup/verify")
 }

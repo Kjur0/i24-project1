@@ -1,5 +1,14 @@
 import * as z from "zod"
 
+export type formResponse =
+  | {
+      success: false
+      error: string
+    }
+  | {
+      success: true
+    }
+
 export const signupFormSchema = z.object({
   email: z
     .email("Adres email jest niepoprawny")
@@ -18,5 +27,5 @@ export const otpFormSchema = z.object({
 })
 
 export const authnAddFormSchema = z.object({
-  name: z.string("Wprowadź nazwę").min(1, "Nazwa jest wymagana")
+  name: z.string("Wprowadź nazwę").min(1, "Nazwa jest wymagana"),
 })

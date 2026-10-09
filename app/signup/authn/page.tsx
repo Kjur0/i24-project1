@@ -1,4 +1,4 @@
-import { AuthnAddForm } from "@/components/forms/authn-add";
+import { AuthnAddForm } from "@/components/forms/authn-add"
 
 export default function VerifyPage() {
   return (

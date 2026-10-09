@@ -4,3 +4,6 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  pnpm: set this to true or false
+
+nodeVersion: 26.11.1

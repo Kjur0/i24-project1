@@ -20,13 +20,12 @@ import {
 } from "@/components/ui/input-otp"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "@/components/ui/toast"
 import React from "react"
-import { otpFormSchema } from "@/components/forms/schemas"
+import { formResponse, otpFormSchema } from "@/components/forms/schemas"
 
 type OTPFormProps = {
   email: string
-  verify: (data: z.infer<typeof otpFormSchema>) => Promise<void>
+  verify: (data: z.infer<typeof otpFormSchema>) => Promise<formResponse>
 } & React.ComponentProps<"div">
 
 export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
@@ -48,17 +47,12 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
 
   const onSubmit = (data: z.infer<typeof otpFormSchema>) => {
     React.startTransition(async () => {
-      try {
-        await toast.promise(verify(data), {
-          loading: "Weryfikowanie",
-          success: "Zweryfikowano pomyślnie",
-          error: "Wystąpił błąd podczas weryfikacji",
-        })
-      } catch (error) {
+      const response = await verify(data)
+
+      if (!response.success) {
         setError("otp", {
           type: "server",
-          message:
-            error instanceof Error ? error.message : "Wystąpił nieznany błąd",
+          message: response.error,
         })
       }
     })

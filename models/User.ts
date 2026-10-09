@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import { ObjectId, AWSCredentials } from "mongodb"
 import { CredentialDeviceType } from "@simplewebauthn/server"
 
 export type Authn = {

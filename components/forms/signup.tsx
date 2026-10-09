@@ -17,11 +17,10 @@ import { Controller, useForm } from "react-hook-form"
 import * as z from "zod"
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "../ui/toast"
-import { signupFormSchema } from "@/components/forms/schemas"
+import { formResponse, signupFormSchema } from "@/components/forms/schemas"
 
 type SignupFormProps = {
-  signup: (data: z.infer<typeof signupFormSchema>) => Promise<void>
+  signup: (data: z.infer<typeof signupFormSchema>) => Promise<formResponse>
 } & React.ComponentProps<"div">
 
 export function SignupForm({ signup, className, ...props }: SignupFormProps) {
@@ -44,17 +43,12 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
 
   const onSubmit = (data: z.infer<typeof signupFormSchema>) => {
     React.startTransition(async () => {
-      try {
-        await toast.promise(signup(data), {
-          loading: "Tworzenie konta...",
-          success: "Konto zostało utworzone. Sprawdź swoją skrzynkę pocztową.",
-          error: "Wystąpił błąd podczas tworzenia konta.",
-        })
-      } catch (error) {
+      const response = await signup(data)
+
+      if (!response.success) {
         setError("email", {
           type: "server",
-          message:
-            error instanceof Error ? error.message : "Wystąpił nieznany błąd",
+          message: response.error,
         })
       }
     })
