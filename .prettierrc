@@ -5,7 +5,39 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "printWidth": 80,
-  "plugins": ["prettier-plugin-tailwindcss"],
+  "plugins": [
+    "prettier-plugin-tailwindcss",
+    "@ianvs/prettier-plugin-sort-imports"
+  ],
   "tailwindStylesheet": "app/globals.css",
-  "tailwindFunctions": ["cn", "cva"]
+  "tailwindFunctions": ["cn", "cva"],
+  "importOrder": [
+    "^(lucide\\-){0}react",
+    "^@base-ui",
+    "^@hookform",
+    "^input-otp$",
+    "^class-variance-authority$",
+    "^cn$",
+    "",
+    "^next",
+    "^@simplewebauthn",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^zod$",
+    "[sS]chemas?$",
+    "^@/models/(.*)$",
+    "",
+    "\\.css$",
+    "^@/components/(ui/){0}",
+    "@/lib",
+    "^mongo",
+    "^@/components/ui/",
+    "^lucide-react$",
+    "",
+    "<BUILTIN_MODULES>"
+  ],
+  "importOrderSafeSideEffects": ["\\.css$"],
+  "importOrderTypeScriptVersion": "5.9.3",
+  "importOrderCaseSensitive": true
 }

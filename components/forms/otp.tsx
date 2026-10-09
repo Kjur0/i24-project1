@@ -1,7 +1,14 @@
 "use client"
 
+import { useTransition } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "cn"
 
+import * as z from "zod"
+import { formResponse, otpFormSchema } from "@/components/forms/schemas"
+
+import Logo from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -10,18 +17,14 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import Logo from "@/components/logo"
-import * as z from "zod"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import React from "react"
-import { formResponse, otpFormSchema } from "@/components/forms/schemas"
+import { Spinner } from "@/components/ui/spinner"
+import { MailBadgeIcon } from "lucide-react"
 
 type OTPFormProps = {
   email: string
@@ -29,7 +32,7 @@ type OTPFormProps = {
 } & React.ComponentProps<"div">
 
 export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
-  const { handleSubmit, control, formState, setError } = useForm<
+  const { handleSubmit, control, setError, formState } = useForm<
     z.infer<typeof otpFormSchema>
   >({
     mode: "onTouched",
@@ -45,17 +48,15 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
     shouldFocusError: true,
   })
 
-  const onSubmit = (data: z.infer<typeof otpFormSchema>) => {
-    React.startTransition(async () => {
-      const response = await verify(data)
+  const onSubmit = async (data: z.infer<typeof otpFormSchema>) => {
+    const response = await verify(data)
 
-      if (!response.success) {
-        setError("otp", {
-          type: "server",
-          message: response.error,
-        })
-      }
-    })
+    if (!response.success) {
+      setError("otp", {
+        type: "server",
+        message: response.error,
+      })
+    }
   }
 
   return (
@@ -73,7 +74,7 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
           <Controller
             name="otp"
             control={control}
-            render={({ field, fieldState }) => (
+            render={({ field, fieldState, formState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="otp">Kod logowania</FieldLabel>
                 <InputOTP
@@ -81,7 +82,7 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
                   autoFocus
                   aria-invalid={fieldState.invalid}
                   maxLength={8}
-                  disabled={fieldState.isValidating}
+                  disabled={formState.isSubmitting}
                   autoComplete="one-time-code"
                   id="otp"
                 >
@@ -108,7 +109,17 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
           />
           <Field>
             <Button type="submit" disabled={formState.isSubmitting}>
-              Zweryfikuj
+              {formState.isSubmitting ? (
+                <>
+                  <Spinner />
+                  Weryfikacja...
+                </>
+              ) : (
+                <>
+                  <MailBadgeIcon />
+                  Zweryfikuj
+                </>
+              )}
             </Button>
           </Field>
         </FieldGroup>

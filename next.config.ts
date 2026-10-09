@@ -1,7 +1,7 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.22.31"],
+  allowedDevOrigins: ["192.168.22.31", "asus.jurkowski.net.pl"],
   typedRoutes: true,
   experimental: {
     typedEnv: true,

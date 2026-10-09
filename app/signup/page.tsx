@@ -1,18 +1,20 @@
-import { SignupForm } from "@/components/forms/signup"
+import { cookies, headers } from "next/headers"
+import { redirect } from "next/navigation"
+
+import * as z from "zod"
 import { formResponse, signupFormSchema } from "@/components/forms/schemas"
+
+import { SignupForm } from "@/components/forms/signup"
 import { userExists, users } from "@/lib/db"
 import { sendOTP } from "@/lib/otp"
-import { cookies, headers } from "next/headers"
-import * as z from "zod"
-import { redirect } from "next/navigation"
 
 export default function SignupPage() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
+    <main className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <SignupForm signup={signup} />
       </div>
-    </div>
+    </main>
   )
 }
 
@@ -65,9 +67,10 @@ async function signup(
     })
   } catch (error) {
     console.dir(error)
-    throw new Error(
-      "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później."
-    )
+    return {
+      success: false,
+      error: "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później."
+    }
   }
-  redirect("/signup/verify")
+  redirect("/signup/verify", "replace")
 }

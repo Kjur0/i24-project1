@@ -1,10 +1,14 @@
 "use server"
 
 import { cookies } from "next/headers"
-import { users } from "./db"
-import crypto from "node:crypto"
-import { User } from "@/models/User"
+
+import { CurrentUser } from "@/models/User"
+
+import { users } from "@/lib/db"
 import { ObjectId } from "mongodb"
+
+import crypto from "node:crypto"
+import { redirect } from "next/navigation";
 
 export async function login(email: string) {
   const cookieStore = await cookies()
@@ -61,12 +65,9 @@ export async function logout() {
 
   cookieStore.delete("user_id")
   cookieStore.delete("session_token")
-}
 
-type CurrentUser = Pick<
-  User,
-  "email" | "username" | "role" | "verified" | "createdAt"
-> & { id: string }
+  redirect("/", "replace")
+}
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   const cookieStore = await cookies()

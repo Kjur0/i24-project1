@@ -29,3 +29,9 @@ export const otpFormSchema = z.object({
 export const authnAddFormSchema = z.object({
   name: z.string("Wprowadź nazwę").min(1, "Nazwa jest wymagana"),
 })
+
+export const loginFormSchema = z.object({
+  email: z
+    .email("Adres email jest niepoprawny")
+    .min(1, "Adres email jest wymagany"),
+})

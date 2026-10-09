@@ -1,5 +1,6 @@
-import db from "@/lib/mongo"
 import { User } from "@/models/User"
+
+import db from "@/lib/mongo"
 
 export const users = db.collection<User>("users")
 export const posts = db.collection("posts")

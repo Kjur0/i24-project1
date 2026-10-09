@@ -1,20 +1,28 @@
-import { cookies, headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-import * as z from "zod"
-import { formResponse, otpFormSchema } from "@/components/forms/schemas"
 
-import { OTPForm } from "@/components/forms/otp"
-import { login } from "@/lib/auth"
-import { users } from "@/lib/db"
-import { verifyOTP } from "@/lib/otp"
+
+import * as z from "zod";
+import { formResponse, otpFormSchema } from "@/components/forms/schemas";
+
+
+
+import { OTPForm } from "@/components/forms/otp";
+import { login } from "@/lib/auth";
+import { users } from "@/lib/db";
+import { verifyOTP } from "@/lib/otp";
+
+
+
+
 
 export default async function VerifyPage() {
   const cookieStore = await cookies()
-  const email = cookieStore.get("signup_email")?.value
+  const email = cookieStore.get("login_email")?.value
 
   if (!email) {
-    redirect("/signup")
+    redirect("/login")
   }
 
   return (
@@ -38,7 +46,7 @@ async function verify(
   }
 
   const cookieStore = await cookies()
-  const email = cookieStore.get("signup_email")!.value
+  const email = cookieStore.get("login_email")!.value
 
   const headerList = await headers()
   const forwardedFor = headerList.get("x-forwarded-for")
@@ -50,7 +58,7 @@ async function verify(
 
   switch (result) {
     case "success":
-      cookieStore.delete("signup_email")
+      cookieStore.delete("login_email")
       await users.updateOne(
         { email },
         {
@@ -58,7 +66,10 @@ async function verify(
         }
       )
       await login(email)
-      redirect("/signup/authn", "replace")
+      if ((await users.findOne({ email }))?.authn.length == 0) {
+        // redirect("/login/authn", "replace")
+      }
+      redirect("/dashboard", "replace")
     case "invalid_otp":
       return { success: false, error: "Nieprawidłowy kod logowania" }
     case "max_attempts":

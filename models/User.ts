@@ -1,7 +1,8 @@
-import { ObjectId, AWSCredentials } from "mongodb"
 import { CredentialDeviceType } from "@simplewebauthn/server"
 
-export type Authn = {
+import { ObjectId } from "mongodb"
+
+export type UserAuthn = {
   id: string
   name: string
   publicKey: string
@@ -12,13 +13,25 @@ export type Authn = {
   createdAt: Date
 }
 
-export type User = {
-  _id?: ObjectId
-  email: string
-  username: string
-  role: "user" | "admin" | "moderator"
-  verified: boolean
-  sessionTokens: Array<string>
-  authn: Array<Authn>
+export type UserOTP = {
+  hash: string
+  attempts: number
   createdAt: Date
 }
+
+export type User = {
+  _id?: ObjectId
+  authn: Array<UserAuthn>
+  createdAt: Date
+  email: string
+  role: "user" | "admin" | "moderator"
+  sessionTokens: Array<string>
+  username: string
+  verified: boolean
+  otp?: UserOTP
+}
+
+export type CurrentUser = Pick<
+  User,
+  "email" | "username" | "role" | "verified" | "createdAt"
+> & { id: string }

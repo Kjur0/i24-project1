@@ -1,5 +1,6 @@
-import { SwatchBookIcon } from "lucide-react"
 import Link from "next/link"
+
+import { SwatchBookIcon } from "lucide-react"
 
 export default function Logo({ vertical = false }: { vertical?: boolean }) {
   if (vertical)

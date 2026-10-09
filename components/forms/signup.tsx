@@ -1,7 +1,15 @@
 "use client"
 
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "cn"
 
+import Link from "next/link"
+
+import * as z from "zod"
+import { formResponse, signupFormSchema } from "@/components/forms/schemas"
+
+import Logo from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -10,14 +18,13 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import Logo from "@/components/logo"
-import { Controller, useForm } from "react-hook-form"
-import * as z from "zod"
-import * as React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { formResponse, signupFormSchema } from "@/components/forms/schemas"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Spinner } from "@/components/ui/spinner"
+import { AtSignIcon, SquareUserIcon, UserPlusIcon } from "lucide-react"
 
 type SignupFormProps = {
   signup: (data: z.infer<typeof signupFormSchema>) => Promise<formResponse>
@@ -41,17 +48,15 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
     shouldFocusError: true,
   })
 
-  const onSubmit = (data: z.infer<typeof signupFormSchema>) => {
-    React.startTransition(async () => {
-      const response = await signup(data)
+  const onSubmit = async (data: z.infer<typeof signupFormSchema>) => {
+    const response = await signup(data)
 
-      if (!response.success) {
-        setError("email", {
-          type: "server",
-          message: response.error,
-        })
-      }
-    })
+    if (!response.success) {
+      setError("email", {
+        type: "server",
+        message: response.error,
+      })
+    }
   }
 
   return (
@@ -68,18 +73,23 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
           <Controller
             name="email"
             control={control}
-            render={({ field, fieldState }) => (
+            render={({ field, fieldState, formState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  {...field}
-                  id="email"
-                  autoFocus
-                  placeholder="uczen@tm1.edu.pl"
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="email"
-                  disabled={fieldState.isValidating}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <AtSignIcon />
+                    <InputGroupInput
+                      {...field}
+                      id="email"
+                      autoFocus
+                      placeholder="uczen@tm1.edu.pl"
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="email"
+                      disabled={formState.isSubmitting}
+                    />
+                  </InputGroupAddon>
+                </InputGroup>
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
@@ -93,21 +103,35 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
                 <FieldDescription>
                   Podaj jak widzieć będą Cię inni użytkownicy
                 </FieldDescription>
-                <Input
-                  {...field}
-                  id="username"
-                  placeholder="J. Doe"
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="name"
-                  disabled={fieldState.isValidating}
-                />
+                <InputGroup>
+                  <InputGroupAddon>
+                    <SquareUserIcon />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    {...field}
+                    id="username"
+                    placeholder="J. Doe"
+                    aria-invalid={fieldState.invalid}
+                    autoComplete="name"
+                    disabled={formState.isSubmitting}
+                  />
+                </InputGroup>
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
           <Field>
             <Button type="submit" disabled={formState.isSubmitting}>
-              Stwórz konto
+              {formState.isSubmitting ? (
+                <>
+                  <Spinner /> Tworzenie konta...
+                </>
+              ) : (
+                <>
+                  <UserPlusIcon />
+                  Stwórz konto
+                </>
+              )}
             </Button>
           </Field>
         </FieldGroup>
