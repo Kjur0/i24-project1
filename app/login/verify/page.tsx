@@ -1,21 +1,13 @@
-import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { cookies, headers } from "next/headers"
+import { redirect } from "next/navigation"
 
+import * as z from "zod"
+import { formResponse, otpFormSchema } from "@/components/forms/schemas"
 
-
-import * as z from "zod";
-import { formResponse, otpFormSchema } from "@/components/forms/schemas";
-
-
-
-import { OTPForm } from "@/components/forms/otp";
-import { login } from "@/lib/auth";
-import { users } from "@/lib/db";
-import { verifyOTP } from "@/lib/otp";
-
-
-
-
+import { OTPForm } from "@/components/forms/otp"
+import { login } from "@/lib/auth"
+import { users } from "@/lib/db"
+import { verifyOTP } from "@/lib/otp"
 
 export default async function VerifyPage() {
   const cookieStore = await cookies()

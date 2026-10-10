@@ -2,6 +2,4 @@
 
 type AuthnUseFormProps = React.ComponentProps<"div">
 
-export function AuthnUseForm({ className, ...props }: AuthnUseFormProps) {
-  
-}
+export function AuthnUseForm({ className, ...props }: AuthnUseFormProps) {}

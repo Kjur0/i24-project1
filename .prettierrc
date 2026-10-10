@@ -12,7 +12,7 @@
   "tailwindStylesheet": "app/globals.css",
   "tailwindFunctions": ["cn", "cva"],
   "importOrder": [
-    "^(lucide\\-){0}react",
+    "^react",
     "^@base-ui",
     "^@hookform",
     "^input-otp$",

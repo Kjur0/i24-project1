@@ -82,7 +82,6 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
                     <InputGroupInput
                       {...field}
                       id="email"
-                      autoFocus
                       placeholder="uczen@tm1.edu.pl"
                       aria-invalid={fieldState.invalid}
                       autoComplete="email"

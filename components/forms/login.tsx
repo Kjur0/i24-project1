@@ -1,42 +1,44 @@
-"use client"
+"use client";
 
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { cn } from "cn"
+import { useEffect, useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "cn";
 
-import Link from "next/link"
-import {
-  browserSupportsWebAuthn,
-  startAuthentication,
-} from "@simplewebauthn/browser"
 
-import * as z from "zod"
-import { formResponse, loginFormSchema } from "@/components/forms/schemas"
 
-import Logo from "@/components/logo"
-import { checkCredential, getLoginOptions } from "@/lib/authn"
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group"
-import { toast } from "@/components/ui/toast"
-import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication } from "@simplewebauthn/browser";
+
+
+
+import * as z from "zod";
+import { formResponse, loginFormSchema } from "@/components/forms/schemas";
+
+
+
+import Logo from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
+import { checkCredential, getLoginOptions } from "@/lib/authn";
+import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react";
+
+
+
+
 
 type LoginFormProps = {
   login: (data: z.infer<typeof loginFormSchema>) => Promise<formResponse>
 } & React.ComponentProps<"div">
 
 export function LoginForm({ login, className, ...props }: LoginFormProps) {
+  const [isPending, startTransition] = useTransition()
+  const router = useRouter()
+
   const { handleSubmit, control, setError, formState } = useForm<
     z.infer<typeof loginFormSchema>
   >({
@@ -64,45 +66,105 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
     }
   }
 
-  const onWebAuthN = async () => {
-    if (!window.isSecureContext) {
-      toast.add({
-        title: "Błąd logowania natychmiastowego",
-        description:
-          "Logowanie natychmiastowe wymaga HTTPS lub adresu http://localhost.",
+  useEffect(() => {
+    let isMounted = true
+
+    async function setupAutoFill() {
+      if (!window.isSecureContext || !isMounted) {
+        return
+      }
+
+      if (!browserSupportsWebAuthnAutofill() || !isMounted) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description:
+            "Twoja przeglądarka nie obsługuje logowania natychmiastowego.",
+          type: "warn",
+        })
+        return
+      }
+
+      const init = await getLoginOptions()
+
+      if ("error" in init) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: init.error,
+          type: "error",
+        })
+        return
+      }
+
+      const credential = await startAuthentication({
+        useBrowserAutofill: true,
+        optionsJSON: init.options,
       })
-      return
+
+      const response = await checkCredential(credential)
+
+      if ("error" in response) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: response.error,
+          type: "error",
+        })
+        return
+      }
     }
 
-    if (!browserSupportsWebAuthn()) {
-      toast.add({
-        title: "Błąd logowania natychmiastowego",
-        description: "Ta przeglądarka nie obsługuje WebAuthN.",
-      })
-      return
+    setupAutoFill()
+    return () => {
+      isMounted = false
     }
+  }, [router])
 
-    const init = await getLoginOptions()
+  const onWebAuthN = () => {
+    startTransition(async () => {
+      if (!window.isSecureContext) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description:
+            "Logowanie natychmiastowe wymaga HTTPS lub adresu http://localhost.",
+          type: "error",
+        })
+        return
+      }
 
-    if ("error" in init) {
-      toast.add({
-        title: "Błąd logowania natychmiastowego",
-        description: init.error,
+      if (!browserSupportsWebAuthn()) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: "Twoja przeglądarka nie obsługuje WebAuthN.",
+          type: "error",
+        })
+        return
+      }
+
+      const init = await getLoginOptions()
+
+      if ("error" in init) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: init.error,
+          type: "error",
+        })
+        return
+      }
+
+      const credential = await startAuthentication({
+        optionsJSON: init.options,
       })
-      return
-    }
 
-    const credential = await startAuthentication({ optionsJSON: init.options })
+      const response = await checkCredential(credential)
 
-    const response = await checkCredential(credential)
-
-    if ("error" in response) {
-      toast.add({
-        title: "Błąd logowania natychmiastowego",
-        description: response.error,
-      })
-      return
-    }
+      if ("error" in response) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: response.error,
+          type: "error",
+        })
+        return
+      }
+    })
   }
 
   return (
@@ -129,10 +191,9 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
                   <InputGroupInput
                     {...field}
                     id="email"
-                    autoFocus
                     placeholder="uczen@tm1.edu.pl"
                     aria-invalid={fieldState.invalid}
-                    autoComplete="email"
+                    autoComplete="email webauthn"
                     disabled={formState.isSubmitting}
                   />
                 </InputGroup>
@@ -141,20 +202,39 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
             )}
           />
           <Field>
-            <Button type="submit" disabled={formState.isSubmitting}>
-              <LogInIcon />
-              Zaloguj się
+            <Button
+              type="submit"
+              disabled={formState.isSubmitting || isPending}
+            >
+              {formState.isSubmitting ? (
+                <>
+                  <Spinner /> Logowanie...
+                </>
+              ) : (
+                <>
+                  <LogInIcon />
+                  Zaloguj się
+                </>
+              )}
             </Button>
           </Field>
           <FieldSeparator>LUB</FieldSeparator>
           <Field>
             <Button
               type="button"
-              disabled={formState.isSubmitting}
+              disabled={formState.isSubmitting || isPending}
               onClick={onWebAuthN}
             >
-              <UserKeyIcon />
-              Użyj logowania natychmiastowego
+              {isPending ? (
+                <>
+                  <Spinner /> Logowanie natychmiastowe...
+                </>
+              ) : (
+                <>
+                  <UserKeyIcon />
+                  Użyj logowania natychmiastowego
+                </>
+              )}
             </Button>
           </Field>
         </FieldGroup>

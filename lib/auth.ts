@@ -1,6 +1,7 @@
 "use server"
 
 import { cookies } from "next/headers"
+import { redirect } from "next/navigation"
 
 import { CurrentUser } from "@/models/User"
 
@@ -8,7 +9,6 @@ import { users } from "@/lib/db"
 import { ObjectId } from "mongodb"
 
 import crypto from "node:crypto"
-import { redirect } from "next/navigation";
 
 export async function login(email: string) {
   const cookieStore = await cookies()

@@ -69,7 +69,8 @@ async function signup(
     console.dir(error)
     return {
       success: false,
-      error: "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później."
+      error:
+        "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później.",
     }
   }
   redirect("/signup/verify", "replace")
