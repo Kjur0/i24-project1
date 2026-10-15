@@ -29,7 +29,7 @@ export function SiteHeader() {
   const user = use(loggedIn ? getCurrentUser() : Promise.resolve(null))
 
   return (
-    <header className="sticky top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
+    <header className="fixed top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
       <Link href="/">
         <Logo />
       </Link>
@@ -56,13 +56,13 @@ export function UserMenu({ user }: UserMenuProps) {
     <ButtonGroup>
       <DropdownMenu>
         <DropdownMenuTrigger
-          render={<Button variant="ghost" className="pl-2" />}
+          render={<Button variant="ghost" className="max-sm:pr-2 pl-2" />}
         >
           <Avatar>
             <AvatarImage src={"not-available"} alt={"not-available"} />
             <AvatarFallback>{user.email.substring(0, 2)}</AvatarFallback>
           </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="flex-1 text-left text-sm leading-tight hidden sm:grid">
             <span className="truncate font-medium">{user.username}</span>
             <span className="truncate text-xs text-foreground/70">
               {user.email}
@@ -84,7 +84,12 @@ export function UserMenu({ user }: UserMenuProps) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button variant="ghost" size="icon" onClick={logout}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={logout}
+        className="max-sm:hidden"
+      >
         <LogOutIcon />
       </Button>
     </ButtonGroup>
