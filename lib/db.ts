@@ -1,4 +1,4 @@
-import { User } from "@/models/User"
+import { User } from "@/types/user"
 
 import db from "@/lib/mongo"
 

@@ -52,13 +52,14 @@ async function verify(
     case "success":
       cookieStore.delete("signup_email")
       await users.updateOne(
+        //TODO: try-catch
         { email },
         {
           $set: { verified: true },
         }
       )
-      await login(email)
-      redirect("/signup/authn", "replace")
+      await login(email) //TODO: try-catch
+      redirect("/signup/authn", "replace") //TODO: replace with router.replace() after
     case "invalid_otp":
       return { success: false, error: "Nieprawidłowy kod logowania" }
     case "max_attempts":

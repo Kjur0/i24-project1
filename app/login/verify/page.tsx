@@ -31,7 +31,7 @@ async function verify(
 ): Promise<formResponse> {
   "use server"
 
-  const parsed = otpFormSchema.safeParse(data)
+  const parsed = await otpFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
     return { success: false, error: parsed.error.message }
@@ -56,12 +56,13 @@ async function verify(
         {
           $set: { verified: true },
         }
-      )
-      await login(email)
+      ) //TODO: try-catch
+      await login(email) //TODO: try-catch
       if ((await users.findOne({ email }))?.authn.length == 0) {
+        //TODO: try-catch
         // redirect("/login/authn", "replace")
       }
-      redirect("/dashboard", "replace")
+      redirect("/dashboard", "replace") //TODO: replace with router.replace() after
     case "invalid_otp":
       return { success: false, error: "Nieprawidłowy kod logowania" }
     case "max_attempts":

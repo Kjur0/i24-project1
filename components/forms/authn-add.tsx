@@ -1,32 +1,35 @@
-"use client";
+"use client"
 
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
+import { useRouter } from "next/navigation"
+import {
+  browserSupportsWebAuthn,
+  startRegistration,
+} from "@simplewebauthn/browser"
 
+import * as z from "zod"
+import { authnAddFormSchema } from "@/components/forms/schemas"
 
-import { useRouter } from "next/navigation";
-import { browserSupportsWebAuthn, startRegistration } from "@simplewebauthn/browser";
-
-
-
-import * as z from "zod";
-import { authnAddFormSchema } from "@/components/forms/schemas";
-
-
-
-import Logo from "@/components/logo";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Spinner } from "@/components/ui/spinner";
-import { getRegistrationOptions, registerCredential } from "@/lib/authn";
-import { cn } from "@/lib/utils";
-import { KeyIcon, LogInIcon, UserKeyIcon } from "lucide-react";
-
-
-
-
+import Logo from "@/components/logo"
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Spinner } from "@/components/ui/spinner"
+import { getRegistrationOptions, registerCredential } from "@/lib/authn"
+import { cn } from "@/lib/utils"
+import { KeyIcon, LogInIcon, UserKeyIcon } from "lucide-react"
 
 type AuthnAddFormProps = React.ComponentProps<"div">
 

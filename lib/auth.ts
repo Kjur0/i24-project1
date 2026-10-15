@@ -3,7 +3,7 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { CurrentUser } from "@/models/User"
+import { CurrentUser } from "@/types/user"
 
 import { users } from "@/lib/db"
 import { ObjectId } from "mongodb"

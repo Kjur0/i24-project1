@@ -32,6 +32,7 @@ async function signup(
   const validEmail = parsed.data.email.toLowerCase()
 
   if (await userExists(validEmail)) {
+    //TODO: try-catch
     return {
       success: false,
       error: "Użytkownik o podanym adresie email już istnieje",
@@ -39,6 +40,7 @@ async function signup(
   }
 
   await users.insertOne({
+    //TODO: try-catch
     email: validEmail,
     role: "user",
     username: parsed.data.username,
@@ -55,7 +57,7 @@ async function signup(
     : headerList.get("x-real-ip") || "127.0.0.1"
 
   try {
-    await sendOTP(validEmail, clientIp)
+    await sendOTP(validEmail, clientIp) //TODO: try-catch
 
     const cookieStore = await cookies()
     cookieStore.set("signup_email", validEmail, {
@@ -73,5 +75,5 @@ async function signup(
         "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później.",
     }
   }
-  redirect("/signup/verify", "replace")
+  redirect("/signup/verify", "replace") //replace with router.replace() after
 }

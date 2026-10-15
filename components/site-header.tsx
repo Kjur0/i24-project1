@@ -2,7 +2,7 @@ import { use } from "react"
 
 import Link from "next/link"
 
-import { CurrentUser } from "@/models/User"
+import { CurrentUser } from "@/types/user"
 
 import Logo from "@/components/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

@@ -1,35 +1,40 @@
-"use client";
+"use client"
 
-import { useEffect, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "cn";
+import { useEffect, useTransition } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { cn } from "cn"
 
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import {
+  browserSupportsWebAuthn,
+  browserSupportsWebAuthnAutofill,
+  startAuthentication,
+} from "@simplewebauthn/browser"
 
+import * as z from "zod"
+import { formResponse, loginFormSchema } from "@/components/forms/schemas"
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication } from "@simplewebauthn/browser";
-
-
-
-import * as z from "zod";
-import { formResponse, loginFormSchema } from "@/components/forms/schemas";
-
-
-
-import Logo from "@/components/logo";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Spinner } from "@/components/ui/spinner";
-import { toast } from "@/components/ui/toast";
-import { checkCredential, getLoginOptions } from "@/lib/authn";
-import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react";
-
-
-
-
+import Logo from "@/components/logo"
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "@/components/ui/toast"
+import { checkCredential, getLoginOptions } from "@/lib/authn"
+import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react"
 
 type LoginFormProps = {
   login: (data: z.infer<typeof loginFormSchema>) => Promise<formResponse>

@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 
+///TODO: change to be a type
 export class Comment {
   constructor(
     public author: ObjectId,
