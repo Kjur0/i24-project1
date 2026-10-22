@@ -1,9 +1,8 @@
-import { users } from "@/lib/db";
+//TODO: audit #1
 
+import { users } from "@/lib/db"
 
-
-import crypto from "node:crypto";
-
+import crypto from "node:crypto"
 
 export async function sendOTP(email: string, clientIp: string): Promise<void> {
   const otp = crypto.randomInt(10000000, 100000000).toString()

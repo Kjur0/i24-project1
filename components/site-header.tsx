@@ -2,7 +2,7 @@ import { use } from "react"
 
 import Link from "next/link"
 
-import { CurrentUser } from "@/types/user"
+import { currentUser } from "@/types/user"
 
 import Logo from "@/components/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -21,7 +21,7 @@ import { getCurrentUser, isAuthenticated, logout } from "@/lib/auth"
 import { LogOutIcon } from "lucide-react"
 
 type UserMenuProps = {
-  user: CurrentUser
+  user: currentUser
 }
 
 export function SiteHeader() {

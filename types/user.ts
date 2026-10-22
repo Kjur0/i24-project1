@@ -2,7 +2,7 @@ import { CredentialDeviceType } from "@simplewebauthn/server"
 
 import { ObjectId } from "mongodb"
 
-export type UserAuthn = {
+export type userAuthn = {
   id: string
   name: string
   publicKey: string
@@ -13,25 +13,24 @@ export type UserAuthn = {
   createdAt: Date
 }
 
-export type UserOTP = {
+export type userOTP = {
   hash: string
   attempts: number
   createdAt: Date
 }
 
-export type User = {
+export type user = {
   _id?: ObjectId
-  authn: Array<UserAuthn>
+  authn: Array<userAuthn>
   createdAt: Date
   email: string
   role: "user" | "admin" | "moderator"
-  sessionTokens: Array<string>
   username: string
   verified: boolean
-  otp?: UserOTP
+  otp?: userOTP
 }
 
-export type CurrentUser = Pick<
-  User,
+export type currentUser = Pick<
+  user,
   "email" | "username" | "role" | "verified" | "createdAt"
 > & { id: string }
