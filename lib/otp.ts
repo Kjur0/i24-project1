@@ -1,11 +1,14 @@
-import { users } from "@/lib/db"
+import { users } from "@/lib/db";
 
-import crypto from "node:crypto"
+
+
+import crypto from "node:crypto";
+
 
 export async function sendOTP(email: string, clientIp: string): Promise<void> {
   const otp = crypto.randomInt(10000000, 100000000).toString()
 
-  const secretSalt = process.env.OTPSalt || "default_salt"
+  const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
     .update(`${otp}:${clientIp}:${secretSalt}:${email}`)
@@ -42,7 +45,7 @@ export async function verifyOTP(
     return "user_not_found"
   }
 
-  const secretSalt = process.env.OTPSalt || "default_salt"
+  const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
     .update(`${otp}:${clientIp}:${secretSalt}:${email}`)

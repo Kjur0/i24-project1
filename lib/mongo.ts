@@ -1,14 +1,21 @@
 import { MongoClient } from "mongodb"
 
+if (
+  !process.env.MONGO_USER ||
+  !process.env.MONGO_PASS ||
+  !process.env.MONGO_URL
+) {
+  throw new Error("Missing MongoDB credentials in environment variables")
+}
+
 export const mongo = new MongoClient(
-  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URI}`
+  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}`
 )
 
 try {
   await mongo.connect()
-  console.log("You successfully connected to MongoDB!")
-} catch (err) {
-  console.dir(err)
+} catch (error) {
+  throw new Error("Failed to connect to MongoDB", { cause: error })
 }
 
 export const db = mongo.db("webmaster")
