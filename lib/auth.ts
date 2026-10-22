@@ -110,9 +110,5 @@ export async function isAuthenticated(): Promise<boolean> {
     expiresAt: { $gt: new Date() },
   })
 
-  if (!userId) {
-    cookieStore.delete("session_token")
-  }
-
   return !!userId
 }

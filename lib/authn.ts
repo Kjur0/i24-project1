@@ -1,6 +1,5 @@
 "use server"
 
-//TODO: audit #1
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import {
@@ -16,7 +15,7 @@ import {
 import { COSEALG } from "@simplewebauthn/server/helpers"
 
 import { getCurrentUser, login } from "@/lib/auth"
-import { users } from "@/lib/db"
+import { getUserById, users } from "@/lib/db"
 import { ObjectId } from "mongodb"
 
 const RP_NAME = "webmaster.rip"
@@ -48,13 +47,12 @@ export async function getRegistrationOptions(): Promise<RegistrationOptions> {
   const userName = user.email
   const userDisplayName = user.username
 
-  const excludeCredentials =
-    ((await users.findOne({ _id: new ObjectId(user.id) }))?.authn || []).map(
-      (cred) => ({
-        id: cred.id,
-        transports: cred.transports,
-      })
-    ) || []
+  const excludeCredentials = ((await getUserById(user.id))?.authn ?? []).map(
+    (cred) => ({
+      id: cred.id,
+      transports: cred.transports,
+    })
+  )
 
   const options = await generateRegistrationOptions({
     rpName: RP_NAME,
@@ -74,11 +72,12 @@ export async function getRegistrationOptions(): Promise<RegistrationOptions> {
   })
 
   cookieStore.set("registration_challenge", options.challenge, {
+    domain: process.env.APP_DOMAIN ?? "localhost",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     maxAge: 300,
-    path: "/",
+    path: "/authn",
   })
 
   return { options }
@@ -168,11 +167,12 @@ export async function getLoginOptions(): Promise<LoginOptions> {
 
   const cookieStore = await cookies()
   cookieStore.set("login_challenge", options.challenge, {
+    domain: process.env.APP_DOMAIN ?? "localhost",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict",
     maxAge: 300,
-    path: "/",
+    path: "/login",
   })
 
   return { options }
@@ -199,6 +199,10 @@ export async function checkCredential(
       credential.response.userHandle,
       "base64url"
     )
+
+    if (!ObjectId.isValid(decodedUserHandle.toString())) {
+      return { error: "Nieprawidłowy identyfikator użytkownika" }
+    }
 
     user = await users.findOne({
       _id: new ObjectId(decodedUserHandle.toString()),
@@ -232,17 +236,23 @@ export async function checkCredential(
     return { error: "Nie udało się zweryfikować logowania" }
   }
 
-  await users.updateOne(
-    {
-      _id: new ObjectId(user._id),
-      "authn.id": matchedPasskey.id,
-    },
-    {
-      $set: {
-        "authn.$.counter": verification.authenticationInfo.newCounter,
-      },
-    }
-  )
+  if (
+    !(
+      await users.updateOne(
+        {
+          _id: new ObjectId(user._id),
+          "authn.id": matchedPasskey.id,
+        },
+        {
+          $set: {
+            "authn.$.counter": verification.authenticationInfo.newCounter,
+          },
+        }
+      )
+    ).acknowledged
+  ) {
+    return { error: "Nie udało się zaktualizować licznika passkeya" }
+  }
 
   cookieStore.delete("login_challenge")
 
