@@ -71,6 +71,11 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="center">
           <DropdownMenuGroup>
+            <Link href="/dashboard">
+              <DropdownMenuItem>Moje konto</DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
+          <DropdownMenuGroup>
             <DropdownMenuLabel>Ustawnienia</DropdownMenuLabel>
             <DropdownMenuItem>Profil</DropdownMenuItem>
             <DropdownMenuItem>Logowanie</DropdownMenuItem>
