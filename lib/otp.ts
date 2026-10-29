@@ -30,7 +30,9 @@ export async function sendOTP(email: string): Promise<void> {
       )
     ).acknowledged
   ) {
-    throw new Error("Failed to store OTP in database")
+    throw new Error(
+      "Spróbuj ponownie później. Nie udało się wygenerować kodu logowania."
+    )
   }
 }
 
