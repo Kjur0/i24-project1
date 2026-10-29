@@ -14,6 +14,8 @@ import {
 } from "@simplewebauthn/server"
 import { COSEALG } from "@simplewebauthn/server/helpers"
 
+import { CredentialError, RegistrationError } from "@/lib/authn.types"
+
 import { getCurrentUser, login } from "@/lib/auth"
 import { getUserById, users } from "@/lib/db"
 import { ObjectId } from "mongodb"
@@ -25,22 +27,23 @@ const SUPPORTED_ALGORITHM_IDS = [COSEALG.EdDSA, COSEALG.ES256, COSEALG.RS256]
 
 type RegistrationOptions =
   | {
+      success: true
       options: PublicKeyCredentialCreationOptionsJSON
     }
-  | { error: string }
+  | { success: false; error: RegistrationError }
 
 export async function getRegistrationOptions(): Promise<RegistrationOptions> {
   const cookieStore = await cookies()
   const sessionId = cookieStore.get("session_token")?.value
 
   if (!sessionId) {
-    return { error: "Sesja wygasła" }
+    return { success: false, error: RegistrationError.SESSION_EXPIRED }
   }
 
   const user = await getCurrentUser()
 
   if (!user) {
-    return { error: "Użytkownik nie istnieje" }
+    return { success: false, error: RegistrationError.USER_NOT_FOUND }
   }
 
   const userID = Buffer.from(user.id.toString())
@@ -80,12 +83,15 @@ export async function getRegistrationOptions(): Promise<RegistrationOptions> {
     path: "/authn",
   })
 
-  return { options }
+  return { success: true, options }
 }
 
-type CredentialResponse = {
-  error?: string
-}
+type CredentialResponse =
+  | {
+      success: false
+      error?: CredentialError
+    }
+  | { success: true }
 
 export async function registerCredential(
   credential: RegistrationResponseJSON,
@@ -95,19 +101,19 @@ export async function registerCredential(
   const sessionId = cookieStore.get("session_token")?.value
 
   if (!sessionId) {
-    return { error: "Sesja wygasła" }
+    return { error: CredentialError.SESSION_EXPIRED, success: false }
   }
 
   const challenge = cookieStore.get("registration_challenge")?.value
 
   if (!challenge) {
-    return { error: "Nie znaleziono wyzwania rejestracyjnego" }
+    return { error: CredentialError.CHALLENGE_NOT_FOUND, success: false }
   }
 
   const user = await getCurrentUser()
 
   if (!user) {
-    return { error: "Użytkownik nie istnieje" }
+    return { error: CredentialError.USER_NOT_FOUND, success: false }
   }
 
   const verification = await verifyRegistrationResponse({
@@ -119,7 +125,7 @@ export async function registerCredential(
   })
 
   if (!verification.verified || !verification.registrationInfo) {
-    return { error: "Nie udało się zweryfikować rejestracji" }
+    return { error: CredentialError.VERIFICATION_FAILED, success: false }
   }
 
   const {
@@ -139,16 +145,22 @@ export async function registerCredential(
     createdAt: new Date(),
   }
 
-  await users.updateOne(
-    {
-      _id: new ObjectId(user.id),
-    },
-    {
-      $addToSet: { authn: newPasskey },
-    }
-  )
-
   cookieStore.delete("registration_challenge")
+
+  if (
+    !(
+      await users.updateOne(
+        {
+          _id: new ObjectId(user.id),
+        },
+        {
+          $addToSet: { authn: newPasskey },
+        }
+      )
+    ).acknowledged
+  ) {
+    return { error: CredentialError.INTERNAL_ERROR, success: false }
+  }
 
   redirect("/dashboard", "replace")
 }
@@ -185,7 +197,7 @@ export async function checkCredential(
   const challenge = cookieStore.get("login_challenge")?.value
 
   if (!challenge) {
-    return { error: "Nie znaleziono wyzwania logowania" }
+    return { error: CredentialError.CHALLENGE_NOT_FOUND, success: false }
   }
 
   let user
@@ -201,7 +213,7 @@ export async function checkCredential(
     )
 
     if (!ObjectId.isValid(decodedUserHandle.toString())) {
-      return { error: "Nieprawidłowy identyfikator użytkownika" }
+      return { error: CredentialError.USER_NOT_FOUND, success: false }
     }
 
     user = await users.findOne({
@@ -210,13 +222,13 @@ export async function checkCredential(
   }
 
   if (!user) {
-    return { error: "Nie znaleziono użytkownika" }
+    return { error: CredentialError.USER_NOT_FOUND, success: false }
   }
 
   const matchedPasskey = user.authn.find((cred) => cred.id === credential.id)
 
   if (!matchedPasskey) {
-    return { error: "Nie znaleziono pasującego passkeya" }
+    return { error: CredentialError.INVALID_CREDENTIAL, success: false }
   }
 
   const verification = await verifyAuthenticationResponse({
@@ -233,7 +245,7 @@ export async function checkCredential(
   })
 
   if (!verification.verified) {
-    return { error: "Nie udało się zweryfikować logowania" }
+    return { error: CredentialError.VERIFICATION_FAILED, success: false }
   }
 
   if (
@@ -251,7 +263,7 @@ export async function checkCredential(
       )
     ).acknowledged
   ) {
-    return { error: "Nie udało się zaktualizować licznika passkeya" }
+    return { error: CredentialError.INTERNAL_ERROR, success: false }
   }
 
   cookieStore.delete("login_challenge")

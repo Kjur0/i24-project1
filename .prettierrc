@@ -26,6 +26,7 @@
     "",
     "^zod$",
     "[sS]chemas?$",
+    "types$",
     "^@/types/",
     "",
     "\\.css$",
