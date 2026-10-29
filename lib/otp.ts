@@ -2,7 +2,9 @@ import { users } from "@/lib/db"
 
 import crypto from "node:crypto"
 
-export async function sendOTP(email: string): Promise<void> {
+type OTPSending = "success" | "db_error"
+
+export async function sendOTP(email: string): Promise<OTPSending> {
   const otp = `${crypto.randomInt(100000, 1000000).toString()}wr`
 
   const secretSalt = process.env.OTP_SALT
@@ -30,10 +32,10 @@ export async function sendOTP(email: string): Promise<void> {
       )
     ).acknowledged
   ) {
-    throw new Error(
-      "Spróbuj ponownie później. Nie udało się wygenerować kodu logowania."
-    )
+    return "db_error"
   }
+
+  return "success"
 }
 
 type OTPVerification =

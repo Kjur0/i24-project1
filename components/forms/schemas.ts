@@ -1,9 +1,9 @@
 import * as z from "zod"
 
-export type formResponse =
+export type formResponse<errorType> =
   | {
       success: false
-      error: string
+      error: errorType
     }
   | {
       success: true
