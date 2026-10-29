@@ -1,4 +1,4 @@
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
@@ -40,13 +40,7 @@ async function verify(
   const cookieStore = await cookies()
   const email = cookieStore.get("signup_email")!.value
 
-  const headerList = await headers()
-  const forwardedFor = headerList.get("x-forwarded-for")
-  const clientIp = forwardedFor
-    ? forwardedFor.split(",")[0]
-    : headerList.get("x-real-ip") || "127.0.0.1"
-
-  const result = await verifyOTP(email!, parsed.data.otp, clientIp)
+  const result = await verifyOTP(email!, parsed.data.otp)
 
   switch (result) {
     case "success":

@@ -1,16 +1,14 @@
-//TODO: audit #1
-
 import { users } from "@/lib/db"
 
 import crypto from "node:crypto"
 
-export async function sendOTP(email: string, clientIp: string): Promise<void> {
-  const otp = crypto.randomInt(10000000, 100000000).toString()
+export async function sendOTP(email: string): Promise<void> {
+  const otp = `${crypto.randomInt(100000, 1000000).toString()}wr`
 
   const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
-    .update(`${otp}:${clientIp}:${secretSalt}:${email}`)
+    .update(`${otp}:${secretSalt}:${email}`)
     .digest("hex")
 
   console.log(`Generated OTP for ${email}: ${otp}`) ///TODO: send email
@@ -41,8 +39,7 @@ type OTPVerification =
 
 export async function verifyOTP(
   email: string,
-  otp: string,
-  clientIp: string
+  otp: string
 ): Promise<OTPVerification> {
   const user = await users.findOne({ email })
 
@@ -53,7 +50,7 @@ export async function verifyOTP(
   const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
-    .update(`${otp}:${clientIp}:${secretSalt}:${email}`)
+    .update(`${otp}:${secretSalt}:${email}`)
     .digest("hex")
 
   if (user.otp.attempts >= 5) {

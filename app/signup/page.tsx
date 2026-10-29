@@ -1,4 +1,4 @@
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
@@ -49,14 +49,8 @@ async function signup(
     createdAt: new Date(),
   })
 
-  const headerList = await headers()
-  const forwardedFor = headerList.get("x-forwarded-for")
-  const clientIp = forwardedFor
-    ? forwardedFor.split(",")[0]
-    : headerList.get("x-real-ip") || "127.0.0.1"
-
   try {
-    await sendOTP(validEmail, clientIp) //TODO: try-catch
+    await sendOTP(validEmail) //TODO: try-catch
 
     const cookieStore = await cookies()
     cookieStore.set("signup_email", validEmail, {

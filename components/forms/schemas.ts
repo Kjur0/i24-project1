@@ -23,7 +23,7 @@ export const otpFormSchema = z.object({
   otp: z
     .string("Wprowadź kod logowania")
     .length(8, "Kod logowania musi mieć 8 znaków")
-    .regex(/^\d+$/, "Kod logowania musi składać się z cyfr"),
+    .regex(/^\d{6}wr$/, "Kod logowania ma nieprawidowy format"),
 })
 
 export const authnAddFormSchema = z.object({
