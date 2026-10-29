@@ -224,6 +224,9 @@ export function AuthnAddForm({ className, ...props }: AuthnAddFormProps) {
             "Nie udało się zarejestrować klucza. Spróbuj ponownie."
           )
           return
+        case CredentialError.INVALID_INPUT:
+          setRegistrationError("Nazwa klucza jest nieprawidłowa.")
+          return
         default:
           setRegistrationError("Wystąpił nieznany błąd.")
           return

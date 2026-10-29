@@ -14,6 +14,7 @@ import {
 } from "@simplewebauthn/server"
 import { COSEALG } from "@simplewebauthn/server/helpers"
 
+import { authnAddFormSchema } from "@/components/forms/schemas"
 import { CredentialError, RegistrationError } from "@/lib/authn.types"
 
 import { getCurrentUser, login } from "@/lib/auth"
@@ -99,6 +100,9 @@ export async function registerCredential(
 ): Promise<CredentialResponse> {
   const cookieStore = await cookies()
   const sessionId = cookieStore.get("session_token")?.value
+
+  if (!(await authnAddFormSchema.validateAsync({ name })))
+    return { error: CredentialError.INVALID_INPUT, success: false }
 
   if (!sessionId) {
     return { error: CredentialError.SESSION_EXPIRED, success: false }
