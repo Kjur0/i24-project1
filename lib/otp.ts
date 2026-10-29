@@ -63,12 +63,14 @@ export async function verifyOTP(
   }
 
   if (
-    !(await users.updateOne(
-      { email },
-      {
-        $unset: { otp: "" },
-      }
-    ))
+    !(
+      await users.updateOne(
+        { email },
+        {
+          $unset: { otp: "" },
+        }
+      )
+    ).acknowledged
   ) {
     return "db_error"
   }
