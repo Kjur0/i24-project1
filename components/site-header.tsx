@@ -2,7 +2,7 @@ import { use } from "react"
 
 import Link from "next/link"
 
-import { CurrentUser } from "@/models/User"
+import { currentUser } from "@/types/user"
 
 import Logo from "@/components/logo"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -21,7 +21,7 @@ import { getCurrentUser, isAuthenticated, logout } from "@/lib/auth"
 import { LogOutIcon } from "lucide-react"
 
 type UserMenuProps = {
-  user: CurrentUser
+  user: currentUser
 }
 
 export function SiteHeader() {
@@ -29,7 +29,7 @@ export function SiteHeader() {
   const user = use(loggedIn ? getCurrentUser() : Promise.resolve(null))
 
   return (
-    <header className="sticky top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
+    <header className="fixed top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
       <Link href="/">
         <Logo />
       </Link>
@@ -55,14 +55,12 @@ export function UserMenu({ user }: UserMenuProps) {
   return (
     <ButtonGroup>
       <DropdownMenu>
-        <DropdownMenuTrigger
-          render={<Button variant="ghost" className="pl-2" />}
-        >
+        <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <Avatar>
             <AvatarImage src={"not-available"} alt={"not-available"} />
             <AvatarFallback>{user.email.substring(0, 2)}</AvatarFallback>
           </Avatar>
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="flex-1 text-left text-sm leading-tight hidden sm:grid">
             <span className="truncate font-medium">{user.username}</span>
             <span className="truncate text-xs text-foreground/70">
               {user.email}
@@ -70,6 +68,11 @@ export function UserMenu({ user }: UserMenuProps) {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent side="bottom" align="center">
+          <DropdownMenuGroup>
+            <Link href="/dashboard">
+              <DropdownMenuItem>Moje konto</DropdownMenuItem>
+            </Link>
+          </DropdownMenuGroup>
           <DropdownMenuGroup>
             <DropdownMenuLabel>Ustawnienia</DropdownMenuLabel>
             <DropdownMenuItem>Profil</DropdownMenuItem>
@@ -84,7 +87,12 @@ export function UserMenu({ user }: UserMenuProps) {
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <Button variant="ghost" size="icon" onClick={logout}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={logout}
+        className="max-sm:hidden"
+      >
         <LogOutIcon />
       </Button>
     </ButtonGroup>

@@ -1,4 +1,4 @@
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
@@ -31,7 +31,7 @@ async function verify(
 ): Promise<formResponse> {
   "use server"
 
-  const parsed = otpFormSchema.safeParse(data)
+  const parsed = await otpFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
     return { success: false, error: parsed.error.message }
@@ -40,13 +40,7 @@ async function verify(
   const cookieStore = await cookies()
   const email = cookieStore.get("login_email")!.value
 
-  const headerList = await headers()
-  const forwardedFor = headerList.get("x-forwarded-for")
-  const clientIp = forwardedFor
-    ? forwardedFor.split(",")[0]
-    : headerList.get("x-real-ip") || "127.0.0.1"
-
-  const result = await verifyOTP(email!, parsed.data.otp, clientIp)
+  const result = await verifyOTP(email!, parsed.data.otp)
 
   switch (result) {
     case "success":
@@ -56,12 +50,13 @@ async function verify(
         {
           $set: { verified: true },
         }
-      )
-      await login(email)
+      ) //TODO: try-catch
+      await login(email) //TODO: try-catch
       if ((await users.findOne({ email }))?.authn.length == 0) {
+        //TODO: try-catch
         // redirect("/login/authn", "replace")
       }
-      redirect("/dashboard", "replace")
+      redirect("/authn", "replace") //TODO: replace with router.replace() after
     case "invalid_otp":
       return { success: false, error: "Nieprawidłowy kod logowania" }
     case "max_attempts":

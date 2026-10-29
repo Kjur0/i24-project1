@@ -10,51 +10,54 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "dependencies": {
-    "@base-ui/react": "^1.8.0",
-    "@hookform/resolvers": "^5.9.1",
+    "@base-ui/react": "^1.9.0",
+    "@hookform/resolvers": "^6.0.2",
     "@simplewebauthn/browser": "^14.0.0",
     "@simplewebauthn/server": "^14.0.3",
     "class-variance-authority": "^0.7.1",
-    "cn": "^0.4.0",
+    "cn": "^0.5.0",
     "input-otp": "^1.5.0",
-    "lucide-react": "^1.52.0",
+    "lucide-react": "^1.63.0",
     "mongodb": "^7.7.0",
-    "next": "16.4.0",
+    "next": "16.4.3",
     "next-themes": "^0.4.6",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-hook-form": "^7.89.0",
-    "shadcn": "^4.21.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-hook-form": "^7.91.0",
+    "shadcn": "^4.23.0",
     "tw-animate-css": "^1.4.0",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@shadcn/lint": "^0.2.3",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "eslint": "^10.12.0",
-    "eslint-config-next": "16.4.0",
+    "@typescript-eslint/parser": "^8.72.1",
+    "eslint": "^10.13.0",
+    "eslint-config-next": "16.4.3",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.9.9",
+    "prettier": "^3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*": "prettier --write --ignore-unknown",
+    "**/*.{js,jsx,ts,tsx}": "eslint --fix"
   },
-  "packageManager": "pnpm@12.10.1",
+  "packageManager": "pnpm@12.16.1",
   "engines": {
     "runtime": {
       "name": "node",
-      "version": "^26.1.1",
+      "version": "^26.13.0",
       "onFail": "download"
     }
   },
@@ -66,7 +69,7 @@
     },
     "packageManager": {
       "name": "pnpm",
-      "version": "^12.10.1",
+      "version": "12.16.1",
       "onFail": "download"
     }
   }

@@ -17,7 +17,7 @@ export default function Logo({ vertical = false }: { vertical?: boolean }) {
       <div className="flex size-8 items-center justify-center rounded-md">
         <SwatchBookIcon className="size-6" />
       </div>
-      <span>Webmaster.rip</span>
+      <span className="hidden md:inline">Webmaster.rip</span>
     </span>
   )
 }

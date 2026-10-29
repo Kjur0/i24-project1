@@ -1,2 +1,1 @@
-export PATH="$HOME/.local/share/pnpm/bin:$PATH"
-pnpx lint-staged
+lint-staged

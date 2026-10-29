@@ -1,8 +1,9 @@
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
 import { formResponse, signupFormSchema } from "@/components/forms/schemas"
+import { SignupError } from "@/components/forms/error.types"
 
 import { SignupForm } from "@/components/forms/signup"
 import { userExists, users } from "@/lib/db"
@@ -20,13 +21,13 @@ export default function SignupPage() {
 
 async function signup(
   data: z.infer<typeof signupFormSchema>
-): Promise<formResponse> {
+): Promise<formResponse<SignupError>> {
   "use server"
 
   const parsed = await signupFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.message }
+    return { success: false, error: SignupError.VALIDATION_ERROR }
   }
 
   const validEmail = parsed.data.email.toLowerCase()
@@ -34,44 +35,45 @@ async function signup(
   if (await userExists(validEmail)) {
     return {
       success: false,
-      error: "Użytkownik o podanym adresie email już istnieje",
+      error: SignupError.USER_EXISTS,
     }
   }
 
-  await users.insertOne({
-    email: validEmail,
-    role: "user",
-    username: parsed.data.username,
-    verified: false,
-    sessionTokens: [],
-    authn: [],
-    createdAt: new Date(),
-  })
-
-  const headerList = await headers()
-  const forwardedFor = headerList.get("x-forwarded-for")
-  const clientIp = forwardedFor
-    ? forwardedFor.split(",")[0]
-    : headerList.get("x-real-ip") || "127.0.0.1"
-
-  try {
-    await sendOTP(validEmail, clientIp)
-
-    const cookieStore = await cookies()
-    cookieStore.set("signup_email", validEmail, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 15,
-      path: "/signup/verify",
-    })
-  } catch (error) {
-    console.dir(error)
+  if (
+    !(
+      await users.insertOne({
+        email: validEmail,
+        role: "user",
+        username: parsed.data.username,
+        verified: false,
+        authn: [],
+        createdAt: new Date(),
+      })
+    ).acknowledged
+  ) {
     return {
       success: false,
-      error:
-        "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później.",
+      error: SignupError.INTERNAL_ERROR,
     }
   }
+
+  const result = await sendOTP(validEmail)
+
+  if (result !== "success") {
+    return {
+      success: false,
+      error: SignupError.INTERNAL_ERROR,
+    }
+  }
+
+  const cookieStore = await cookies()
+  cookieStore.set("signup_email", validEmail, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 15,
+    path: "/signup/verify",
+  })
+
   redirect("/signup/verify", "replace")
 }
