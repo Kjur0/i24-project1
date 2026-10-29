@@ -179,7 +179,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
           <div className="flex flex-col items-center gap-2 text-center">
             <Logo vertical />
             <h1 className="text-xl font-bold">Logowanie</h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Nie masz konta? <Link href="/signup">Zarejestruj się</Link>
             </FieldDescription>
           </div>
@@ -244,7 +244,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
+      <FieldDescription className="text-center">
         Poprzez kliknięcie przycisku &ldquo;Zaloguj się&rdquo; akceptujesz{" "}
         <a href="#">Regulamin</a> oraz <a href="#">Politykę Prywatności</a>.
       </FieldDescription>

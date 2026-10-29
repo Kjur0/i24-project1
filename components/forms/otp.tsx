@@ -65,7 +65,7 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
           <div className="flex flex-col items-center gap-2 text-center">
             <Logo vertical />
             <h1 className="text-xl font-bold">Weryfikacja</h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Na adres {email} został wysłany kod logowania. Nie musisz pamiętać
               hasła.
             </FieldDescription>
@@ -123,7 +123,7 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
+      <FieldDescription className="text-center">
         Poprzez kliknięcie przycisku &ldquo;Kontynuuj&rdquo; akceptujesz{" "}
         <a href="#">Regulamin</a> oraz <a href="#">Politykę Prywatności</a>.
       </FieldDescription>

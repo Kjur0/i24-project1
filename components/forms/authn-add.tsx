@@ -104,7 +104,7 @@ export function AuthnAddForm({ className, ...props }: AuthnAddFormProps) {
             <h1 className="text-xl font-bold">
               Dodawanie logowania natychmiastowego
             </h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Teraz możesz dodać logowanie natychmiastowe do swojego konta.
               <br />
               Dzięki temu szybciej i bezpieczniej zalogujesz się do aplikacji.

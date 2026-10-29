@@ -55,9 +55,7 @@ export function UserMenu({ user }: UserMenuProps) {
   return (
     <ButtonGroup>
       <DropdownMenu>
-        <DropdownMenuTrigger
-          render={<Button variant="ghost" className="max-sm:pr-2 pl-2" />}
-        >
+        <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <Avatar>
             <AvatarImage src={"not-available"} alt={"not-available"} />
             <AvatarFallback>{user.email.substring(0, 2)}</AvatarFallback>

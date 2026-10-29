@@ -15,19 +15,23 @@ export async function sendOTP(email: string, clientIp: string): Promise<void> {
 
   console.log(`Generated OTP for ${email}: ${otp}`) ///TODO: send email
 
-  if (!(await users.updateOne(
-    { email },
-    {
-      $set: {
-        otp: {
-          hash: otpHash,
-          attempts: 0,
-          createdAt: new Date(),
+  if (
+    !(
+      await users.updateOne(
+        { email },
+        {
+          $set: {
+            otp: {
+              hash: otpHash,
+              attempts: 0,
+              createdAt: new Date(),
+            },
+          },
         },
-      },
-    },
-    { upsert: true }
-  )).acknowledged) {
+        { upsert: true }
+      )
+    ).acknowledged
+  ) {
     throw new Error("Failed to store OTP in database")
   }
 }
@@ -61,12 +65,14 @@ export async function verifyOTP(
     return "invalid_otp"
   }
 
-  if (!(await users.updateOne(
-    { email },
-    {
-      $unset: { otp: "" },
-    }
-  ))){
+  if (
+    !(await users.updateOne(
+      { email },
+      {
+        $unset: { otp: "" },
+      }
+    ))
+  ) {
     return "db_error"
   }
 

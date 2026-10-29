@@ -66,7 +66,7 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
           <div className="flex flex-col items-center gap-2 text-center">
             <Logo vertical />
             <h1 className="text-xl font-bold">Rejestracja</h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Masz już konto? <Link href="/login">Zaloguj się</Link>
             </FieldDescription>
           </div>
@@ -135,7 +135,7 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
+      <FieldDescription className="text-center">
         Poprzez kliknięcie przycisku &ldquo;Stwórz konto&rdquo; akceptujesz{" "}
         <a href="#">Regulamin</a> oraz <a href="#">Politykę Prywatności</a>.
       </FieldDescription>

@@ -45,7 +45,6 @@ async function signup(
     role: "user",
     username: parsed.data.username,
     verified: false,
-    sessionTokens: [],
     authn: [],
     createdAt: new Date(),
   })

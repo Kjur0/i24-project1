@@ -27,7 +27,7 @@ export async function getUserById(
   } else if (!ObjectId.isValid(id)) {
     return await users.findOne({ _id: new ObjectId(id) })
   } else {
-    return null;
+    return null
   }
 }
 export async function getUserByEmail(email: string) {
