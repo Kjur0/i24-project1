@@ -27,7 +27,7 @@ import { MailBadgeIcon } from "lucide-react"
 
 type OTPFormProps = {
   email: string
-  verify: (data: z.infer<typeof otpFormSchema>) => Promise<formResponse>
+  verify: (data: z.infer<typeof otpFormSchema>) => Promise<formResponse<string>>
 } & React.ComponentProps<"div">
 
 export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {

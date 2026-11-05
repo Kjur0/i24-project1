@@ -23,7 +23,7 @@ export default async function LoginPage() {
 
 async function login(
   data: z.infer<typeof loginFormSchema>
-): Promise<formResponse> {
+): Promise<formResponse<string>> {
   "use server"
 
   const parsed = await loginFormSchema.safeParseAsync(data)
@@ -35,21 +35,16 @@ async function login(
   const validEmail = parsed.data.email.toLowerCase()
 
   if (!(await userExists(validEmail))) {
-    //TODO: try-catch
     return {
       success: false,
       error: "Nie znaleziono użytkownika o podanym adresie email",
     }
   }
 
-  try {
-    await sendOTP(validEmail)
-  } catch (error) {
-    console.dir(error)
-    return {
-      success: false,
-      error: "Wystąpił błąd podczas logowania. Spróbuj ponownie później.",
-    }
+  const result = await sendOTP(validEmail)
+
+  if (result !== "success") {
+    throw new Error("Failed to send login OTP")
   }
 
   const cookieStore = await cookies()
@@ -61,5 +56,5 @@ async function login(
     path: "/login/verify",
   })
 
-  redirect("/login/verify", "replace") //TODO: replace with router.replace() after
+  redirect("/login/verify", "replace")
 }

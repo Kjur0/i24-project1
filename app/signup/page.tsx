@@ -39,31 +39,23 @@ async function signup(
     }
   }
 
-  if (
-    !(
-      await users.insertOne({
-        email: validEmail,
-        role: "user",
-        username: parsed.data.username,
-        verified: false,
-        authn: [],
-        createdAt: new Date(),
-      })
-    ).acknowledged
-  ) {
-    return {
-      success: false,
-      error: SignupError.INTERNAL_ERROR,
-    }
+  const insertResult = await users.insertOne({
+    email: validEmail,
+    role: "user",
+    username: parsed.data.username,
+    verified: false,
+    authn: [],
+    createdAt: new Date(),
+  })
+
+  if (!insertResult.acknowledged) {
+    throw new Error("Failed to create signup user")
   }
 
   const result = await sendOTP(validEmail)
 
   if (result !== "success") {
-    return {
-      success: false,
-      error: SignupError.INTERNAL_ERROR,
-    }
+    throw new Error("Failed to send signup OTP")
   }
 
   const cookieStore = await cookies()

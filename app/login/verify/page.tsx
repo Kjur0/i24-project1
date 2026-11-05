@@ -28,7 +28,7 @@ export default async function VerifyPage() {
 
 async function verify(
   data: z.infer<typeof otpFormSchema>
-): Promise<formResponse> {
+): Promise<formResponse<string>> {
   "use server"
 
   const parsed = await otpFormSchema.safeParseAsync(data)
@@ -38,25 +38,28 @@ async function verify(
   }
 
   const cookieStore = await cookies()
-  const email = cookieStore.get("login_email")!.value
+  const email = cookieStore.get("login_email")?.value
 
-  const result = await verifyOTP(email!, parsed.data.otp)
+  if (!email) {
+    redirect("/login", "replace")
+  }
+
+  const result = await verifyOTP(email, parsed.data.otp)
 
   switch (result) {
     case "success":
       cookieStore.delete("login_email")
-      await users.updateOne(
+      const updateResult = await users.updateOne(
         { email },
         {
           $set: { verified: true },
         }
-      ) //TODO: try-catch
-      await login(email) //TODO: try-catch
-      if ((await users.findOne({ email }))?.authn.length == 0) {
-        //TODO: try-catch
-        // redirect("/login/authn", "replace")
+      )
+      if (!updateResult.acknowledged || updateResult.matchedCount !== 1) {
+        throw new Error("Failed to verify login user")
       }
-      redirect("/authn", "replace") //TODO: replace with router.replace() after
+      await login(email)
+      redirect("/authn", "replace")
     case "invalid_otp":
       return { success: false, error: "Nieprawidłowy kod logowania" }
     case "max_attempts":
@@ -70,6 +73,8 @@ async function verify(
         success: false,
         error: "Nie znaleziono użytkownika o podanym adresie email",
       }
+    case "db_error":
+      throw new Error("Failed to verify login OTP")
     default:
       return {
         success: false,

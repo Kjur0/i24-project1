@@ -37,7 +37,9 @@ import { checkCredential, getLoginOptions } from "@/lib/authn"
 import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react"
 
 type LoginFormProps = {
-  login: (data: z.infer<typeof loginFormSchema>) => Promise<formResponse>
+  login: (
+    data: z.infer<typeof loginFormSchema>
+  ) => Promise<formResponse<string>>
 } & React.ComponentProps<"div">
 
 export function LoginForm({ login, className, ...props }: LoginFormProps) {
