@@ -1,11 +1,13 @@
 "use client"
 
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "cn"
 
 import * as z from "zod"
 import { formResponse, otpFormSchema } from "@/components/forms/schemas"
+import { OTPError } from "@/components/forms/error.types"
 
 import Logo from "@/components/logo"
 import { Button } from "@/components/ui/button"
@@ -27,10 +29,13 @@ import { MailBadgeIcon } from "lucide-react"
 
 type OTPFormProps = {
   email: string
-  verify: (data: z.infer<typeof otpFormSchema>) => Promise<formResponse<string>>
+  verify: (
+    data: z.infer<typeof otpFormSchema>
+  ) => Promise<formResponse<OTPError>>
 } & React.ComponentProps<"div">
 
 export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
+  const [fatalError, setFatalError] = useState<Error | null>(null)
   const { handleSubmit, control, setError, formState } = useForm<
     z.infer<typeof otpFormSchema>
   >({
@@ -48,14 +53,35 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
   })
 
   const onSubmit = async (data: z.infer<typeof otpFormSchema>) => {
-    const response = await verify(data)
+    try {
+      const response = await verify(data)
 
-    if (!response.success) {
-      setError("otp", {
-        type: "server",
-        message: response.error,
-      })
+      if (!response.success) {
+        setError("otp", {
+          type: "server",
+          message: getOTPErrorMessage(response.error),
+        })
+      }
+
+      function getOTPErrorMessage(error: OTPError) {
+        switch (error) {
+          case OTPError.INVALID_OTP:
+            return "Nieprawidłowy kod logowania"
+          case OTPError.MAX_ATTEMPTS:
+            return "Przekroczono maksymalną liczbę prób. Wygeneruj nowy kod logowania"
+          case OTPError.USER_NOT_FOUND:
+            return "Nie znaleziono użytkownika o podanym adresie email"
+          case OTPError.VALIDATION_ERROR:
+            return "Kod logowania ma nieprawidłowy format"
+        }
+      }
+    } catch (error) {
+      setFatalError(error instanceof Error ? error : new Error(String(error)))
     }
+  }
+
+  if (fatalError) {
+    throw fatalError
   }
 
   return (

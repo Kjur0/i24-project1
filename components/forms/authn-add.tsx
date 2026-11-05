@@ -89,7 +89,14 @@ export function AuthnAddForm({ className, ...props }: AuthnAddFormProps) {
       return
     }
 
-    const init = await getRegistrationOptions()
+    let init: Awaited<ReturnType<typeof getRegistrationOptions>>
+
+    try {
+      init = await getRegistrationOptions()
+    } catch (error) {
+      setFatalError(error instanceof Error ? error : new Error(String(error)))
+      return
+    }
 
     if (!init.success) {
       switch (init.error) {
@@ -111,7 +118,7 @@ export function AuthnAddForm({ className, ...props }: AuthnAddFormProps) {
       }
     }
 
-    let credential: RegistrationResponseJSON
+    let credential: RegistrationResponseJSON | null = null
 
     try {
       credential = await startRegistration({ optionsJSON: init.options })
@@ -193,7 +200,18 @@ export function AuthnAddForm({ className, ...props }: AuthnAddFormProps) {
       }
     }
 
-    const response = await registerCredential(credential, data.name)
+    if (!credential) {
+      return
+    }
+
+    let response: Awaited<ReturnType<typeof registerCredential>>
+
+    try {
+      response = await registerCredential(credential, data.name)
+    } catch (error) {
+      setFatalError(error instanceof Error ? error : new Error(String(error)))
+      return
+    }
 
     if (!response.success) {
       switch (response.error) {

@@ -149,23 +149,20 @@ export async function registerCredential(
     createdAt: new Date(),
   }
 
-  cookieStore.delete("registration_challenge")
+  const updateResult = await users.updateOne(
+    {
+      _id: new ObjectId(user.id),
+    },
+    {
+      $addToSet: { authn: newPasskey },
+    }
+  )
 
-  if (
-    !(
-      await users.updateOne(
-        {
-          _id: new ObjectId(user.id),
-        },
-        {
-          $addToSet: { authn: newPasskey },
-        }
-      )
-    ).acknowledged
-  ) {
+  if (!updateResult.acknowledged || updateResult.matchedCount !== 1) {
     return { error: CredentialError.INTERNAL_ERROR, success: false }
   }
 
+  cookieStore.delete("registration_challenge")
   redirect("/dashboard", "replace")
 }
 
@@ -252,20 +249,22 @@ export async function checkCredential(
     return { error: CredentialError.VERIFICATION_FAILED, success: false }
   }
 
+  const updateResult = await users.updateOne(
+    {
+      _id: new ObjectId(user._id),
+      "authn.id": matchedPasskey.id,
+    },
+    {
+      $set: {
+        "authn.$.counter": verification.authenticationInfo.newCounter,
+      },
+    }
+  )
+
   if (
-    !(
-      await users.updateOne(
-        {
-          _id: new ObjectId(user._id),
-          "authn.id": matchedPasskey.id,
-        },
-        {
-          $set: {
-            "authn.$.counter": verification.authenticationInfo.newCounter,
-          },
-        }
-      )
-    ).acknowledged
+    !updateResult.acknowledged ||
+    updateResult.matchedCount !== 1 ||
+    updateResult.modifiedCount !== 1
   ) {
     return { error: CredentialError.INTERNAL_ERROR, success: false }
   }

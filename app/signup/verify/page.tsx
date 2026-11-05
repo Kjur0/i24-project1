@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 
 import * as z from "zod"
 import { formResponse, otpFormSchema } from "@/components/forms/schemas"
+import { OTPError } from "@/components/forms/error.types"
 
 import { OTPForm } from "@/components/forms/otp"
 import { login } from "@/lib/auth"
@@ -28,13 +29,13 @@ export default async function VerifyPage() {
 
 async function verify(
   data: z.infer<typeof otpFormSchema>
-): Promise<formResponse<string>> {
+): Promise<formResponse<OTPError>> {
   "use server"
 
   const parsed = otpFormSchema.safeParse(data)
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.message }
+    return { success: false, error: OTPError.VALIDATION_ERROR }
   }
 
   const cookieStore = await cookies()
@@ -61,24 +62,14 @@ async function verify(
       await login(email)
       redirect("/authn", "replace")
     case "invalid_otp":
-      return { success: false, error: "Nieprawidłowy kod logowania" }
+      return { success: false, error: OTPError.INVALID_OTP }
     case "max_attempts":
-      return {
-        success: false,
-        error:
-          "Przekroczono maksymalną liczbę prób. Wygeneruj nowy kod logowania",
-      }
+      return { success: false, error: OTPError.MAX_ATTEMPTS }
     case "user_not_found":
-      return {
-        success: false,
-        error: "Nie znaleziono użytkownika o podanym adresie email",
-      }
+      return { success: false, error: OTPError.USER_NOT_FOUND }
     case "db_error":
       throw new Error("Failed to verify signup OTP")
     default:
-      return {
-        success: false,
-        error: "Wystąpił nieznany błąd podczas weryfikacji",
-      }
+      throw new Error("Unknown signup OTP verification result")
   }
 }

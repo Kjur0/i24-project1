@@ -24,7 +24,7 @@ export async function getUserById(
 ): ReturnType<typeof users.findOne<user>> {
   if (id instanceof ObjectId) {
     return await users.findOne({ _id: id })
-  } else if (!ObjectId.isValid(id)) {
+  } else if (ObjectId.isValid(id)) {
     return await users.findOne({ _id: new ObjectId(id) })
   } else {
     return null

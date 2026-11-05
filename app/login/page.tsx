@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 
 import * as z from "zod"
 import { formResponse, loginFormSchema } from "@/components/forms/schemas"
+import { LoginError } from "@/components/forms/error.types"
 
 import { LoginForm } from "@/components/forms/login"
 import { isAuthenticated } from "@/lib/auth"
@@ -23,13 +24,13 @@ export default async function LoginPage() {
 
 async function login(
   data: z.infer<typeof loginFormSchema>
-): Promise<formResponse<string>> {
+): Promise<formResponse<LoginError>> {
   "use server"
 
   const parsed = await loginFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.message }
+    return { success: false, error: LoginError.VALIDATION_ERROR }
   }
 
   const validEmail = parsed.data.email.toLowerCase()
@@ -37,7 +38,7 @@ async function login(
   if (!(await userExists(validEmail))) {
     return {
       success: false,
-      error: "Nie znaleziono użytkownika o podanym adresie email",
+      error: LoginError.USER_NOT_FOUND,
     }
   }
 
