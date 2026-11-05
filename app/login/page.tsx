@@ -1,14 +1,18 @@
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
 import { formResponse, loginFormSchema } from "@/components/forms/schemas"
+import { LoginError } from "@/components/forms/error.types"
 
 import { LoginForm } from "@/components/forms/login"
+import { isAuthenticated } from "@/lib/auth"
 import { userExists } from "@/lib/db"
 import { sendOTP } from "@/lib/otp"
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  if (await isAuthenticated()) redirect("/dashboard", "replace")
+
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -20,13 +24,13 @@ export default function LoginPage() {
 
 async function login(
   data: z.infer<typeof loginFormSchema>
-): Promise<formResponse> {
+): Promise<formResponse<LoginError>> {
   "use server"
 
   const parsed = await loginFormSchema.safeParseAsync(data)
 
   if (!parsed.success) {
-    return { success: false, error: parsed.error.message }
+    return { success: false, error: LoginError.VALIDATION_ERROR }
   }
 
   const validEmail = parsed.data.email.toLowerCase()
@@ -34,33 +38,24 @@ async function login(
   if (!(await userExists(validEmail))) {
     return {
       success: false,
-      error: "Nie znaleziono użytkownika o podanym adresie email",
+      error: LoginError.USER_NOT_FOUND,
     }
   }
 
-  const headerList = await headers()
-  const forwardedFor = headerList.get("x-forwarded-for")
-  const clientIp = forwardedFor
-    ? forwardedFor.split(",")[0]
-    : headerList.get("x-real-ip") || "127.0.0.1"
+  const result = await sendOTP(validEmail)
 
-  try {
-    await sendOTP(validEmail, clientIp)
-
-    const cookieStore = await cookies()
-    cookieStore.set("login_email", validEmail, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 15,
-      path: "/login/verify",
-    })
-  } catch (error) {
-    console.dir(error)
-    return {
-      success: false,
-      error: "Wystąpił błąd podczas logowania. Spróbuj ponownie później.",
-    }
+  if (result !== "success") {
+    throw new Error("Failed to send login OTP")
   }
+
+  const cookieStore = await cookies()
+  cookieStore.set("login_email", validEmail, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 60 * 15,
+    path: "/login/verify",
+  })
+
   redirect("/login/verify", "replace")
 }

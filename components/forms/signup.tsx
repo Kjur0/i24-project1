@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "cn"
@@ -8,6 +9,7 @@ import Link from "next/link"
 
 import * as z from "zod"
 import { formResponse, signupFormSchema } from "@/components/forms/schemas"
+import { SignupError } from "@/components/forms/error.types"
 
 import Logo from "@/components/logo"
 import { Button } from "@/components/ui/button"
@@ -27,10 +29,13 @@ import { Spinner } from "@/components/ui/spinner"
 import { AtSignIcon, SquareUserIcon, UserPlusIcon } from "lucide-react"
 
 type SignupFormProps = {
-  signup: (data: z.infer<typeof signupFormSchema>) => Promise<formResponse>
+  signup: (
+    data: z.infer<typeof signupFormSchema>
+  ) => Promise<formResponse<SignupError>>
 } & React.ComponentProps<"div">
 
 export function SignupForm({ signup, className, ...props }: SignupFormProps) {
+  const [fatalError, setFatalError] = useState<Error | null>(null)
   const { handleSubmit, control, formState, setError } = useForm<
     z.infer<typeof signupFormSchema>
   >({
@@ -48,14 +53,45 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
     shouldFocusError: true,
   })
 
-  const onSubmit = async (data: z.infer<typeof signupFormSchema>) => {
-    const response = await signup(data)
+  if (fatalError) {
+    throw fatalError
+  }
 
-    if (!response.success) {
-      setError("email", {
-        type: "server",
-        message: response.error,
-      })
+  const onSubmit = async (data: z.infer<typeof signupFormSchema>) => {
+    try {
+      const response = await signup(data)
+
+      if (!response.success) {
+        switch (response.error) {
+          case SignupError.USER_EXISTS:
+            setError("email", {
+              type: "manual",
+              message: "Użytkownik o podanym adresie email już istnieje",
+            })
+            return
+          case SignupError.VALIDATION_ERROR:
+            setError("root", {
+              type: "manual",
+              message: "Nieprawidłowy adres email",
+            })
+            return
+          case SignupError.INTERNAL_ERROR:
+            setError("root", {
+              type: "manual",
+              message:
+                "Wystąpił błąd podczas tworzenia użytkownika. Spróbuj ponownie później.",
+            })
+            return
+          default:
+            setError("root", {
+              type: "manual",
+              message: "Nieznany błąd. Spróbuj ponownie później.",
+            })
+            return
+        }
+      }
+    } catch (error) {
+      setFatalError(error as Error)
     }
   }
 
@@ -66,7 +102,7 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
           <div className="flex flex-col items-center gap-2 text-center">
             <Logo vertical />
             <h1 className="text-xl font-bold">Rejestracja</h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Masz już konto? <Link href="/login">Zaloguj się</Link>
             </FieldDescription>
           </div>
@@ -132,10 +168,11 @@ export function SignupForm({ signup, className, ...props }: SignupFormProps) {
                 </>
               )}
             </Button>
+            <FieldError errors={[formState.errors.root]} />
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
+      <FieldDescription className="text-center">
         Poprzez kliknięcie przycisku &ldquo;Stwórz konto&rdquo; akceptujesz{" "}
         <a href="#">Regulamin</a> oraz <a href="#">Politykę Prywatności</a>.
       </FieldDescription>

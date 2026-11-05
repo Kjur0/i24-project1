@@ -2,39 +2,48 @@ import { users } from "@/lib/db"
 
 import crypto from "node:crypto"
 
-export async function sendOTP(email: string, clientIp: string): Promise<void> {
-  const otp = crypto.randomInt(10000000, 100000000).toString()
+type OTPSending = "success" | "db_error"
 
-  const secretSalt = process.env.OTPSalt || "default_salt"
+export async function sendOTP(email: string): Promise<OTPSending> {
+  const otp = `${crypto.randomInt(100000, 1000000).toString()}wr`
+
+  const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
-    .update(`${otp}:${clientIp}:${secretSalt}:${email}`)
+    .update(`${otp}:${secretSalt}:${email}`)
     .digest("hex")
 
   console.log(`Generated OTP for ${email}: ${otp}`) ///TODO: send email
 
-  await users.updateOne(
-    { email },
-    {
-      $set: {
-        otp: {
-          hash: otpHash,
-          attempts: 0,
-          createdAt: new Date(),
+  if (
+    !(
+      await users.updateOne(
+        { email },
+        {
+          $set: {
+            otp: {
+              hash: otpHash,
+              attempts: 0,
+              createdAt: new Date(),
+            },
+          },
         },
-      },
-    },
-    { upsert: true }
-  )
+        { upsert: true }
+      )
+    ).acknowledged
+  ) {
+    return "db_error"
+  }
+
+  return "success"
 }
 
 type OTPVerification =
-  "max_attempts" | "invalid_otp" | "success" | "user_not_found"
+  "max_attempts" | "invalid_otp" | "success" | "user_not_found" | "db_error"
 
 export async function verifyOTP(
   email: string,
-  otp: string,
-  clientIp: string
+  otp: string
 ): Promise<OTPVerification> {
   const user = await users.findOne({ email })
 
@@ -42,10 +51,10 @@ export async function verifyOTP(
     return "user_not_found"
   }
 
-  const secretSalt = process.env.OTPSalt || "default_salt"
+  const secretSalt = process.env.OTP_SALT
   const otpHash = crypto
     .createHash("sha256")
-    .update(`${otp}:${clientIp}:${secretSalt}:${email}`)
+    .update(`${otp}:${secretSalt}:${email}`)
     .digest("hex")
 
   if (user.otp.attempts >= 5) {
@@ -57,12 +66,18 @@ export async function verifyOTP(
     return "invalid_otp"
   }
 
-  await users.updateOne(
-    { email },
-    {
-      $unset: { otp: "" },
-    }
-  )
+  if (
+    !(
+      await users.updateOne(
+        { email },
+        {
+          $unset: { otp: "" },
+        }
+      )
+    ).acknowledged
+  ) {
+    return "db_error"
+  }
 
   return "success"
 }
