@@ -29,7 +29,7 @@ export function SiteHeader() {
   const user = use(loggedIn ? getCurrentUser() : Promise.resolve(null))
 
   return (
-    <header className="fixed top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
+    <header className="sticky top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
       <Link href="/">
         <Logo />
       </Link>

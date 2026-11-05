@@ -34,7 +34,7 @@ export async function login(email: string) {
   })
 
   cookieStore.set("session_token", sessionToken, {
-    domain: process.env.APP_DOMAIN ?? "localhost",
+    ...(process.env.APP_DOMAIN ? { domain: process.env.APP_DOMAIN } : {}),
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
@@ -110,5 +110,5 @@ export async function isAuthenticated(): Promise<boolean> {
     expiresAt: { $gt: new Date() },
   })
 
-  return !!userId
+  return userId !== null && (await getUserById(userId.user)) !== null
 }

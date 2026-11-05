@@ -101,7 +101,8 @@ export async function registerCredential(
   const cookieStore = await cookies()
   const sessionId = cookieStore.get("session_token")?.value
 
-  if (!(await authnAddFormSchema.validateAsync({ name })))
+  const parsed = await authnAddFormSchema.safeParseAsync({ name })
+  if (!parsed.success)
     return { error: CredentialError.INVALID_INPUT, success: false }
 
   if (!sessionId) {
@@ -263,8 +264,7 @@ export async function checkCredential(
 
   if (
     !updateResult.acknowledged ||
-    updateResult.matchedCount !== 1 ||
-    updateResult.modifiedCount !== 1
+    updateResult.matchedCount !== 1
   ) {
     return { error: CredentialError.INTERNAL_ERROR, success: false }
   }
