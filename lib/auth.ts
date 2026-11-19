@@ -87,7 +87,7 @@ export async function getCurrentUser(): Promise<currentUser | null> {
   }
 
   return {
-    id: user._id!.toString(),
+    id: user._id.toString(),
     email: user.email,
     username: user.username,
     role: user.role,

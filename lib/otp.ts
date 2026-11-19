@@ -1,3 +1,5 @@
+"use server"
+
 import { users } from "@/lib/db"
 
 import crypto from "node:crypto"

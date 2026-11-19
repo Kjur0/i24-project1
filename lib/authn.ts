@@ -163,17 +163,18 @@ export async function registerCredential(
     return { error: CredentialError.INTERNAL_ERROR, success: false }
   }
 
-  cookieStore.delete("registration_challenge")
+  cookieStore.set("registration_challenge", "", {
+    domain: process.env.APP_DOMAIN ?? "localhost",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/authn",
+  })
   redirect("/dashboard", "replace")
 }
 
-type LoginOptions =
-  | {
-      options: PublicKeyCredentialRequestOptionsJSON
-    }
-  | { error: string }
-
-export async function getLoginOptions(): Promise<LoginOptions> {
+export async function getLoginOptions(): Promise<PublicKeyCredentialRequestOptionsJSON> {
   const options = await generateAuthenticationOptions({
     rpID: RP_ID,
     userVerification: "preferred",
@@ -189,7 +190,7 @@ export async function getLoginOptions(): Promise<LoginOptions> {
     path: "/login",
   })
 
-  return { options }
+  return options
 }
 
 export async function checkCredential(
@@ -262,14 +263,18 @@ export async function checkCredential(
     }
   )
 
-  if (
-    !updateResult.acknowledged ||
-    updateResult.matchedCount !== 1
-  ) {
+  if (!updateResult.acknowledged || updateResult.matchedCount !== 1) {
     return { error: CredentialError.INTERNAL_ERROR, success: false }
   }
 
-  cookieStore.delete("login_challenge")
+  cookieStore.set("login_challenge", "", {
+    domain: process.env.APP_DOMAIN ?? "localhost",
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/login",
+  })
 
   await login(user.email)
 

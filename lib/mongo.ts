@@ -1,3 +1,5 @@
+import "server-only"
+
 import { MongoClient } from "mongodb"
 
 const mongoURI = process.env.MONGO_URI

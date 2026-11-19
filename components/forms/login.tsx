@@ -40,24 +40,50 @@ import { checkCredential, getLoginOptions } from "@/lib/authn"
 import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react"
 
 function showCredentialError(error: CredentialError | undefined) {
-  const description =
-    error === CredentialError.CHALLENGE_NOT_FOUND
-      ? "Nie znaleziono wyzwania logowania. Spróbuj ponownie."
-      : error === CredentialError.USER_NOT_FOUND
-        ? "Nie znaleziono użytkownika dla tego klucza."
-        : error === CredentialError.INVALID_CREDENTIAL
-          ? "Ten klucz logowania jest nieprawidłowy."
-          : error === CredentialError.VERIFICATION_FAILED
-            ? "Nie udało się zweryfikować logowania. Spróbuj ponownie."
-            : error === CredentialError.SESSION_EXPIRED
-              ? "Sesja wygasła. Zaloguj się ponownie."
-              : "Nie udało się zalogować przy użyciu klucza. Spróbuj ponownie."
-
-  toast.add({
-    title: "Błąd logowania natychmiastowego",
-    description,
-    type: "error",
-  })
+  switch (error) {
+    case CredentialError.CHALLENGE_NOT_FOUND:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie znaleziono wyzwania logowania. Spróbuj ponownie.",
+        type: "error",
+      })
+      break
+    case CredentialError.USER_NOT_FOUND:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie znaleziono użytkownika dla tego klucza.",
+        type: "error",
+      })
+      break
+    case CredentialError.INVALID_CREDENTIAL:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Ten klucz logowania jest nieprawidłowy.",
+        type: "error",
+      })
+      break
+    case CredentialError.VERIFICATION_FAILED:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie udało się zweryfikować logowania. Spróbuj ponownie.",
+        type: "error",
+      })
+      break
+    case CredentialError.SESSION_EXPIRED:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Sesja wygasła. Zaloguj się ponownie.",
+        type: "error",
+      })
+      break
+    default:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description:
+          "Nie udało się zalogować przy użyciu klucza. Spróbuj ponownie.",
+        type: "error",
+      })
+  }
 }
 
 type LoginFormProps = {
@@ -88,23 +114,35 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
   })
 
   const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
-    startTransition(async () => {
-      try {
-        const response = await login(data)
+    try {
+      const response = await login(data)
 
-        if (!response.success) {
-          setError("email", {
-            type: "server",
-            message:
-              response.error === LoginError.USER_NOT_FOUND
-                ? "Nie znaleziono użytkownika o podanym adresie email"
-                : "Nieprawidłowy adres email",
-          })
+      if (!response.success) {
+        switch (response.error) {
+          case LoginError.USER_NOT_FOUND:
+            setError("email", {
+              type: "server",
+              message: "Nie znaleziono użytkownika o podanym adresie email",
+            })
+            break
+          case LoginError.VALIDATION_ERROR:
+            setError("email", {
+              type: "server",
+              message: "Nieprawidłowy adres email",
+            })
+            break
+          default:
+            toast.add({
+              title: "Błąd logowania",
+              description:
+                "Nie udało się zalogować. Spróbuj ponownie lub skontaktuj się z administratorem.",
+              type: "error",
+            })
         }
-      } catch (error) {
-        setFatalError(error instanceof Error ? error : new Error(String(error)))
       }
-    })
+    } catch (error) {
+      setFatalError(error as Error)
+    }
   }
 
   const [autofillRestartKey, setAutofillRestartKey] = useState(0)
@@ -118,10 +156,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
       }
 
       try {
-        const [supportsAutofill, init] = await Promise.all([
-          browserSupportsWebAuthnAutofill(),
-          getLoginOptions(),
-        ])
+        const supportsAutofill = await browserSupportsWebAuthnAutofill()
 
         if (!isMounted || buttonCeremonyActive.current) {
           return
@@ -137,27 +172,20 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
           return
         }
 
-        if (!isMounted || buttonCeremonyActive.current) {
-          return
-        }
-
-        if ("error" in init) {
-          toast.add({
-            title: "Błąd logowania natychmiastowego",
-            description: init.error,
-            type: "error",
-          })
-          return
-        }
+        const options = await getLoginOptions()
 
         const credential = await startAuthentication({
           useBrowserAutofill: true,
-          optionsJSON: init.options,
+          optionsJSON: options,
         })
 
         const response = await checkCredential(credential)
 
-        if (!response.success) {
+        if (!isMounted || buttonCeremonyActive.current) {
+          return
+        }
+
+        if (!response.success && isMounted && !buttonCeremonyActive.current) {
           showCredentialError(response.error)
           setAutofillRestartKey((key) => key + 1)
         }
@@ -170,9 +198,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
         }
 
         if (!(error instanceof WebAuthnError)) {
-          setFatalError(
-            error instanceof Error ? error : new Error(String(error))
-          )
+          setFatalError(error as Error)
           return
         }
 
@@ -193,45 +219,41 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
 
   const onWebAuthN = () => {
     buttonCeremonyActive.current = true
+    WebAuthnAbortService.cancelCeremony()
     startTransition(async () => {
+      if (!window.isSecureContext) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description:
+            "Logowanie natychmiastowe wymaga HTTPS lub adresu http://localhost.",
+          type: "error",
+        })
+        return
+      }
+
+      if (!browserSupportsWebAuthn()) {
+        toast.add({
+          title: "Błąd logowania natychmiastowego",
+          description: "Twoja przeglądarka nie obsługuje WebAuthN.",
+          type: "error",
+        })
+        return
+      }
+
       try {
-        if (!window.isSecureContext) {
-          toast.add({
-            title: "Błąd logowania natychmiastowego",
-            description:
-              "Logowanie natychmiastowe wymaga HTTPS lub adresu http://localhost.",
-            type: "error",
-          })
-          return
-        }
-
-        if (!browserSupportsWebAuthn()) {
-          toast.add({
-            title: "Błąd logowania natychmiastowego",
-            description: "Twoja przeglądarka nie obsługuje WebAuthN.",
-            type: "error",
-          })
-          return
-        }
-
-        const init = await getLoginOptions()
-
-        if ("error" in init) {
-          toast.add({
-            title: "Błąd logowania natychmiastowego",
-            description: init.error,
-            type: "error",
-          })
-          return
-        }
+        const options = await getLoginOptions()
 
         const credential = await startAuthentication({
-          optionsJSON: init.options,
+          optionsJSON: options,
         })
+
+        if (!buttonCeremonyActive.current) {
+          return
+        }
 
         const response = await checkCredential(credential)
 
-        if (!response.success) {
+        if (buttonCeremonyActive.current && !response.success) {
           showCredentialError(response.error)
         }
       } catch (error) {
@@ -243,9 +265,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
         }
 
         if (!(error instanceof WebAuthnError)) {
-          setFatalError(
-            error instanceof Error ? error : new Error(String(error))
-          )
+          setFatalError(error as Error)
           return
         }
 

@@ -5,6 +5,8 @@ import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "cn"
 
+import { useRouter } from "next/navigation"
+
 import * as z from "zod"
 import { formResponse, otpFormSchema } from "@/components/forms/schemas"
 import { OTPError } from "@/components/forms/error.types"
@@ -25,6 +27,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import { Spinner } from "@/components/ui/spinner"
+import { toast } from "@/components/ui/toast"
 import { MailBadgeIcon } from "lucide-react"
 
 type OTPFormProps = {
@@ -52,31 +55,47 @@ export function OTPForm({ email, verify, className, ...props }: OTPFormProps) {
     shouldFocusError: true,
   })
 
+  const router = useRouter()
+
   const onSubmit = async (data: z.infer<typeof otpFormSchema>) => {
     try {
       const response = await verify(data)
 
       if (!response.success) {
-        setError("otp", {
-          type: "server",
-          message: getOTPErrorMessage(response.error),
-        })
-      }
-
-      function getOTPErrorMessage(error: OTPError) {
-        switch (error) {
+        switch (response.error) {
           case OTPError.INVALID_OTP:
-            return "Nieprawidłowy kod logowania"
+            setError("otp", {
+              type: "server",
+              message: "Nieprawidłowy kod logowania",
+            })
+            break
           case OTPError.MAX_ATTEMPTS:
-            return "Przekroczono maksymalną liczbę prób. Wygeneruj nowy kod logowania"
+            toast.add({
+              title: "Problem z logowaniem",
+              description:
+                "Przekroczono maksymalną liczbę prób. Wygeneruj nowy kod logowania",
+              type: "error",
+            })
+            router.replace("/login")
+            break
           case OTPError.USER_NOT_FOUND:
-            return "Nie znaleziono użytkownika o podanym adresie email"
+            toast.add({
+              title: "Problem z logowaniem",
+              description: "Nie znaleziono użytkownika o podanym adresie email",
+              type: "error",
+            })
+            router.replace("/login")
+            break
           case OTPError.VALIDATION_ERROR:
-            return "Kod logowania ma nieprawidłowy format"
+            setError("otp", {
+              type: "server",
+              message: "Kod logowania ma nieprawidłowy format",
+            })
+            break
         }
       }
     } catch (error) {
-      setFatalError(error instanceof Error ? error : new Error(String(error)))
+      setFatalError(error as Error)
     }
   }
 

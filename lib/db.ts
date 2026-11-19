@@ -1,3 +1,5 @@
+import "server-only"
+
 import { session } from "@/types/session"
 import { user } from "@/types/user"
 
@@ -13,22 +15,13 @@ export async function userExists(email: string) {
   return !!user
 }
 
-export async function getUserById(
-  id: string
-): ReturnType<typeof users.findOne<user>>
-export async function getUserById(
-  id: ObjectId
-): ReturnType<typeof users.findOne<user>>
-export async function getUserById(
-  id: string | ObjectId
-): ReturnType<typeof users.findOne<user>> {
-  if (id instanceof ObjectId) {
-    return await users.findOne({ _id: id })
-  } else if (ObjectId.isValid(id)) {
+export async function getUserById(id: string | ObjectId) {
+  if (id instanceof ObjectId) return await users.findOne({ _id: id })
+
+  if (ObjectId.isValid(id))
     return await users.findOne({ _id: new ObjectId(id) })
-  } else {
-    return null
-  }
+
+  return null
 }
 export async function getUserByEmail(email: string) {
   return await users.findOne({ email })

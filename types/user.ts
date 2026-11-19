@@ -1,7 +1,5 @@
 import { CredentialDeviceType } from "@simplewebauthn/server"
 
-import { ObjectId } from "mongodb"
-
 export type userAuthn = {
   id: string
   name: string
@@ -20,7 +18,6 @@ export type userOTP = {
 }
 
 export type user = {
-  _id?: ObjectId
   authn: Array<userAuthn>
   createdAt: Date
   email: string
