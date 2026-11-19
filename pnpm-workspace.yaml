@@ -4,5 +4,5 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
-  
+
 nodeVersion: 26.11.1

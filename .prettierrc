@@ -12,6 +12,8 @@
   "tailwindStylesheet": "app/globals.css",
   "tailwindFunctions": ["cn", "cva"],
   "importOrder": [
+    "server-only",
+    "",
     "^react",
     "^@base-ui",
     "^@hookform",
@@ -26,7 +28,8 @@
     "",
     "^zod$",
     "[sS]chemas?$",
-    "^@/models/(.*)$",
+    "types$",
+    "^@/types/",
     "",
     "\\.css$",
     "^@/components/(ui/){0}",

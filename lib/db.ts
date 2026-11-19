@@ -1,16 +1,28 @@
-import { User } from "@/models/User"
+import "server-only"
+
+import { session } from "@/types/session"
+import { user } from "@/types/user"
 
 import db from "@/lib/mongo"
+import { ObjectId } from "mongodb"
 
-export const users = db.collection<User>("users")
+export const users = db.collection<user>("users")
 export const posts = db.collection("posts")
+export const sessions = db.collection<session>("sessions")
 
 export async function userExists(email: string) {
   const user = await users.findOne({ email })
   return !!user
 }
 
-export async function getUser(email: string) {
-  const user = await users.findOne({ email })
-  return user
+export async function getUserById(id: string | ObjectId) {
+  if (id instanceof ObjectId) return await users.findOne({ _id: id })
+
+  if (ObjectId.isValid(id))
+    return await users.findOne({ _id: new ObjectId(id) })
+
+  return null
+}
+export async function getUserByEmail(email: string) {
+  return await users.findOne({ email })
 }

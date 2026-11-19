@@ -1,48 +1,106 @@
-"use client";
+"use client"
 
-import { useEffect, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "cn";
+import { useEffect, useRef, useState, useTransition } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { cn } from "cn"
 
+import Link from "next/link"
+import {
+  WebAuthnAbortService,
+  WebAuthnError,
+  browserSupportsWebAuthn,
+  browserSupportsWebAuthnAutofill,
+  startAuthentication,
+} from "@simplewebauthn/browser"
 
+import * as z from "zod"
+import { formResponse, loginFormSchema } from "@/components/forms/schemas"
+import { LoginError } from "@/components/forms/error.types"
+import { CredentialError } from "@/lib/authn.types"
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { browserSupportsWebAuthn, browserSupportsWebAuthnAutofill, startAuthentication } from "@simplewebauthn/browser";
+import Logo from "@/components/logo"
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator,
+} from "@/components/ui/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "@/components/ui/toast"
+import { checkCredential, getLoginOptions } from "@/lib/authn"
+import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react"
 
-
-
-import * as z from "zod";
-import { formResponse, loginFormSchema } from "@/components/forms/schemas";
-
-
-
-import Logo from "@/components/logo";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { Spinner } from "@/components/ui/spinner";
-import { toast } from "@/components/ui/toast";
-import { checkCredential, getLoginOptions } from "@/lib/authn";
-import { LogInIcon, SquareUserIcon, UserKeyIcon } from "lucide-react";
-
-
-
-
+function showCredentialError(error: CredentialError | undefined) {
+  switch (error) {
+    case CredentialError.CHALLENGE_NOT_FOUND:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie znaleziono wyzwania logowania. Spróbuj ponownie.",
+        type: "error",
+      })
+      break
+    case CredentialError.USER_NOT_FOUND:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie znaleziono użytkownika dla tego klucza.",
+        type: "error",
+      })
+      break
+    case CredentialError.INVALID_CREDENTIAL:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Ten klucz logowania jest nieprawidłowy.",
+        type: "error",
+      })
+      break
+    case CredentialError.VERIFICATION_FAILED:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Nie udało się zweryfikować logowania. Spróbuj ponownie.",
+        type: "error",
+      })
+      break
+    case CredentialError.SESSION_EXPIRED:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description: "Sesja wygasła. Zaloguj się ponownie.",
+        type: "error",
+      })
+      break
+    default:
+      toast.add({
+        title: "Błąd logowania natychmiastowego",
+        description:
+          "Nie udało się zalogować przy użyciu klucza. Spróbuj ponownie.",
+        type: "error",
+      })
+  }
+}
 
 type LoginFormProps = {
-  login: (data: z.infer<typeof loginFormSchema>) => Promise<formResponse>
+  login: (
+    data: z.infer<typeof loginFormSchema>
+  ) => Promise<formResponse<LoginError>>
 } & React.ComponentProps<"div">
 
 export function LoginForm({ login, className, ...props }: LoginFormProps) {
   const [isPending, startTransition] = useTransition()
-  const router = useRouter()
+  const [fatalError, setFatalError] = useState<Error | null>(null)
+  const buttonCeremonyActive = useRef(false)
 
   const { handleSubmit, control, setError, formState } = useForm<
     z.infer<typeof loginFormSchema>
   >({
-    mode: "onTouched",
+    mode: "onChange",
     defaultValues: {
       email: "",
     },
@@ -56,15 +114,38 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
   })
 
   const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
-    const response = await login(data)
+    try {
+      const response = await login(data)
 
-    if (!response.success) {
-      setError("email", {
-        type: "server",
-        message: response.error,
-      })
+      if (!response.success) {
+        switch (response.error) {
+          case LoginError.USER_NOT_FOUND:
+            setError("email", {
+              type: "server",
+              message: "Nie znaleziono użytkownika o podanym adresie email",
+            })
+            break
+          case LoginError.VALIDATION_ERROR:
+            setError("email", {
+              type: "server",
+              message: "Nieprawidłowy adres email",
+            })
+            break
+          default:
+            toast.add({
+              title: "Błąd logowania",
+              description:
+                "Nie udało się zalogować. Spróbuj ponownie lub skontaktuj się z administratorem.",
+              type: "error",
+            })
+        }
+      }
+    } catch (error) {
+      setFatalError(error as Error)
     }
   }
+
+  const [autofillRestartKey, setAutofillRestartKey] = useState(0)
 
   useEffect(() => {
     let isMounted = true
@@ -74,51 +155,71 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
         return
       }
 
-      if (!browserSupportsWebAuthnAutofill() || !isMounted) {
-        toast.add({
-          title: "Błąd logowania natychmiastowego",
-          description:
-            "Twoja przeglądarka nie obsługuje logowania natychmiastowego.",
-          type: "warn",
+      try {
+        const supportsAutofill = await browserSupportsWebAuthnAutofill()
+
+        if (!isMounted || buttonCeremonyActive.current) {
+          return
+        }
+
+        if (!supportsAutofill) {
+          toast.add({
+            title: "Błąd logowania natychmiastowego",
+            description:
+              "Twoja przeglądarka nie obsługuje logowania natychmiastowego.",
+            type: "warn",
+          })
+          return
+        }
+
+        const options = await getLoginOptions()
+
+        const credential = await startAuthentication({
+          useBrowserAutofill: true,
+          optionsJSON: options,
         })
-        return
-      }
 
-      const init = await getLoginOptions()
+        const response = await checkCredential(credential)
 
-      if ("error" in init) {
+        if (!isMounted || buttonCeremonyActive.current) {
+          return
+        }
+
+        if (!response.success && isMounted && !buttonCeremonyActive.current) {
+          showCredentialError(response.error)
+          setAutofillRestartKey((key) => key + 1)
+        }
+      } catch (error) {
+        if (
+          error instanceof WebAuthnError &&
+          error.code === "ERROR_CEREMONY_ABORTED"
+        ) {
+          return
+        }
+
+        if (!(error instanceof WebAuthnError)) {
+          setFatalError(error as Error)
+          return
+        }
+
         toast.add({
           title: "Błąd logowania natychmiastowego",
-          description: init.error,
+          description: "Nie udało się dokończyć logowania. Spróbuj ponownie.",
           type: "error",
         })
-        return
-      }
-
-      const credential = await startAuthentication({
-        useBrowserAutofill: true,
-        optionsJSON: init.options,
-      })
-
-      const response = await checkCredential(credential)
-
-      if ("error" in response) {
-        toast.add({
-          title: "Błąd logowania natychmiastowego",
-          description: response.error,
-          type: "error",
-        })
-        return
       }
     }
 
-    setupAutoFill()
+    void setupAutoFill()
     return () => {
       isMounted = false
+      WebAuthnAbortService.cancelCeremony()
     }
-  }, [router])
+  }, [autofillRestartKey])
 
   const onWebAuthN = () => {
+    buttonCeremonyActive.current = true
+    WebAuthnAbortService.cancelCeremony()
     startTransition(async () => {
       if (!window.isSecureContext) {
         toast.add({
@@ -139,32 +240,49 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
         return
       }
 
-      const init = await getLoginOptions()
+      try {
+        const options = await getLoginOptions()
 
-      if ("error" in init) {
+        const credential = await startAuthentication({
+          optionsJSON: options,
+        })
+
+        if (!buttonCeremonyActive.current) {
+          return
+        }
+
+        const response = await checkCredential(credential)
+
+        if (buttonCeremonyActive.current && !response.success) {
+          showCredentialError(response.error)
+        }
+      } catch (error) {
+        if (
+          error instanceof WebAuthnError &&
+          error.code === "ERROR_CEREMONY_ABORTED"
+        ) {
+          return
+        }
+
+        if (!(error instanceof WebAuthnError)) {
+          setFatalError(error as Error)
+          return
+        }
+
         toast.add({
           title: "Błąd logowania natychmiastowego",
-          description: init.error,
+          description: "Nie udało się dokończyć logowania. Spróbuj ponownie.",
           type: "error",
         })
-        return
-      }
-
-      const credential = await startAuthentication({
-        optionsJSON: init.options,
-      })
-
-      const response = await checkCredential(credential)
-
-      if ("error" in response) {
-        toast.add({
-          title: "Błąd logowania natychmiastowego",
-          description: response.error,
-          type: "error",
-        })
-        return
+      } finally {
+        buttonCeremonyActive.current = false
+        setAutofillRestartKey((key) => key + 1)
       }
     })
+  }
+
+  if (fatalError) {
+    throw fatalError
   }
 
   return (
@@ -174,7 +292,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
           <div className="flex flex-col items-center gap-2 text-center">
             <Logo vertical />
             <h1 className="text-xl font-bold">Logowanie</h1>
-            <FieldDescription className="text-center">
+            <FieldDescription>
               Nie masz konta? <Link href="/signup">Zarejestruj się</Link>
             </FieldDescription>
           </div>
@@ -193,8 +311,8 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
                     id="email"
                     placeholder="uczen@tm1.edu.pl"
                     aria-invalid={fieldState.invalid}
-                    autoComplete="email webauthn"
-                    disabled={formState.isSubmitting}
+                    autoComplete="username webauthn"
+                    disabled={formState.isSubmitting || isPending}
                   />
                 </InputGroup>
                 <FieldError errors={[fieldState.error]} />
@@ -239,7 +357,7 @@ export function LoginForm({ login, className, ...props }: LoginFormProps) {
           </Field>
         </FieldGroup>
       </form>
-      <FieldDescription className="px-6 text-center">
+      <FieldDescription className="text-center">
         Poprzez kliknięcie przycisku &ldquo;Zaloguj się&rdquo; akceptujesz{" "}
         <a href="#">Regulamin</a> oraz <a href="#">Politykę Prywatności</a>.
       </FieldDescription>
