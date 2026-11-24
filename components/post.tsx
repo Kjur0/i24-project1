@@ -1,9 +1,8 @@
 import type { post } from "@/types/post"
 
-import { CreateCommentDialog } from "@/components/create-content-dialog"
-import { DeleteContentDialog } from "@/components/delete-content-dialog"
-import { EditContentDialog } from "@/components/edit-content-dialog"
+import { PostDialog } from "@/components/post-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import {
   Collapsible,
@@ -21,6 +20,7 @@ import {
 } from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getUserById } from "@/lib/db"
+import { MessageSquarePlusIcon, SquarePenIcon, Trash2Icon } from "lucide-react"
 
 type PostProps = {
   post: post
@@ -54,94 +54,152 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
   )
 
   return (
-    <Item>
-      <ItemMedia>
-        <Avatar>
-          <AvatarImage src={user?.avatar} alt={user?.username} />
-          <AvatarFallback>
-            {user?.username.substring(0, 2).toUpperCase() ?? "?"}
-          </AvatarFallback>
-        </Avatar>
-      </ItemMedia>
-      <ItemContent>
-        <ItemTitle>{post.title}</ItemTitle>
-        <ItemDescription>{post.content}</ItemDescription>
-      </ItemContent>
-      {(isAuthor || (postId && currentUserId)) && (
-        <ItemActions>
-          <ButtonGroup>
-            {isAuthor && (
-              <>
-                {postId && (
-                  <EditContentDialog
-                    postId={postId}
-                    title={post.title}
-                    content={post.content}
-                  />
-                )}
-                {postId && <DeleteContentDialog postId={postId} />}
-              </>
-            )}
-            {postId && currentUserId && <CreateCommentDialog postId={postId} />}
-          </ButtonGroup>
-        </ItemActions>
-      )}
-      {(post.comments?.length ?? 0) > 0 && (
-        <ItemFooter className="justify-start">
-          <Collapsible>
-            <CollapsibleTrigger>
-              Komentarze ({post.comments?.length})
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              {commentsWithAuthors.map(({ comment, index, author }) => {
-                const isCommentAuthor = author?._id.toString() === currentUserId
-                return (
-                  <Item
-                    key={`${comment.createdAt.toISOString()}-${comment.author.toString()}-${index}`}
+    <PostDialog
+      detail={{
+        title: post.title,
+        content: post.content,
+        authorName: user?.username,
+        authorAvatar: user?.avatar,
+        isAuthor,
+        comments: commentsWithAuthors.map(({ comment, index, author }) => ({
+          key: `${comment.createdAt.toISOString()}-${comment.author.toString()}-${index}`,
+          index,
+          createdAt: comment.createdAt.getTime(),
+          title: comment.title,
+          content: comment.content,
+          authorName: author?.username,
+          authorAvatar: author?.avatar,
+          isAuthor: author?._id.toString() === currentUserId,
+        })),
+      }}
+      postId={postId}
+      currentUserId={currentUserId}
+    >
+      <Item>
+        <ItemMedia>
+          <Avatar>
+            <AvatarImage src={user?.avatar} alt={user?.username} />
+            <AvatarFallback>
+              {user?.username.substring(0, 2).toUpperCase() ?? "?"}
+            </AvatarFallback>
+          </Avatar>
+        </ItemMedia>
+        <ItemContent
+          data-post-dialog-open=""
+          role="button"
+          tabIndex={0}
+          aria-haspopup="dialog"
+          className="cursor-pointer"
+        >
+          <ItemTitle>{post.title}</ItemTitle>
+          <ItemDescription>{post.content}</ItemDescription>
+        </ItemContent>
+        {postId && (isAuthor || currentUserId) && (
+          <ItemActions>
+            <ButtonGroup>
+              {isAuthor && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Edytuj wpis"
+                    data-post-dialog-action="post-edit"
                   >
-                    <ItemMedia>
-                      <Avatar>
-                        <AvatarImage
-                          src={author?.avatar}
-                          alt={author?.username}
-                        />
-                        <AvatarFallback>
-                          {author?.username.substring(0, 2).toUpperCase() ??
-                            "?"}
-                        </AvatarFallback>
-                      </Avatar>
-                    </ItemMedia>
-                    <ItemContent>
-                      {comment.title && <ItemTitle>{comment.title}</ItemTitle>}
-                      <ItemDescription>{comment.content}</ItemDescription>
-                    </ItemContent>
-                    {isCommentAuthor && (
-                      <ItemActions>
-                        <ButtonGroup>
-                          {postId && (
-                            <EditContentDialog
-                              postId={postId}
-                              commentIndex={index}
-                              title={comment.title}
-                              content={comment.content}
-                            />
-                          )}
-                          {postId && (
-                            <DeleteContentDialog
-                              postId={postId}
-                              commentIndex={index}
-                            />
-                          )}
-                        </ButtonGroup>
-                      </ItemActions>
-                    )}
-                  </Item>
-                )
-              })}
-            </CollapsibleContent>
-          </Collapsible>
-        </ItemFooter>
-      )}
-    </Item>
+                    <SquarePenIcon />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon-sm"
+                    aria-label="Usuń wpis"
+                    data-post-dialog-action="post-delete"
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </>
+              )}
+              {currentUserId && (
+                <Button type="button" size="sm" data-post-dialog-action="view">
+                  <MessageSquarePlusIcon />
+                  Dodaj komentarz
+                </Button>
+              )}
+            </ButtonGroup>
+          </ItemActions>
+        )}
+        {(post.comments?.length ?? 0) > 0 && (
+          <ItemFooter className="justify-start">
+            <Collapsible>
+              <CollapsibleTrigger>
+                Komentarze ({post.comments?.length})
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {commentsWithAuthors.map(({ comment, index, author }) => {
+                  const isCommentAuthor =
+                    author?._id.toString() === currentUserId
+                  return (
+                    <Item
+                      key={`${comment.createdAt.toISOString()}-${comment.author.toString()}-${index}`}
+                    >
+                      <ItemMedia>
+                        <Avatar>
+                          <AvatarImage
+                            src={author?.avatar}
+                            alt={author?.username}
+                          />
+                          <AvatarFallback>
+                            {author?.username.substring(0, 2).toUpperCase() ??
+                              "?"}
+                          </AvatarFallback>
+                        </Avatar>
+                      </ItemMedia>
+                      <ItemContent
+                        data-post-dialog-open=""
+                        role="button"
+                        tabIndex={0}
+                        aria-haspopup="dialog"
+                        className="cursor-pointer"
+                      >
+                        {comment.title && (
+                          <ItemTitle>{comment.title}</ItemTitle>
+                        )}
+                        <ItemDescription>{comment.content}</ItemDescription>
+                      </ItemContent>
+                      {postId && isCommentAuthor && (
+                        <ItemActions>
+                          <ButtonGroup>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon-xs"
+                              aria-label="Edytuj komentarz"
+                              data-post-dialog-action="comment-edit"
+                              data-comment-index={index}
+                            >
+                              <SquarePenIcon />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon-xs"
+                              aria-label="Usuń komentarz"
+                              data-post-dialog-action="comment-delete"
+                              data-comment-index={index}
+                            >
+                              <Trash2Icon />
+                            </Button>
+                          </ButtonGroup>
+                        </ItemActions>
+                      )}
+                    </Item>
+                  )
+                })}
+              </CollapsibleContent>
+            </Collapsible>
+          </ItemFooter>
+        )}
+      </Item>
+    </PostDialog>
   )
 }
