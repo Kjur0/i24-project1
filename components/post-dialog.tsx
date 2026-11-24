@@ -413,8 +413,8 @@ export function PostDialog({
                     </form>
                   )}
                   <div className="flex flex-col gap-3">
-                    {[...detail.comments]
-                      .sort(
+                    {detail.comments
+                      .toSorted(
                         (first, second) =>
                           second.createdAt - first.createdAt ||
                           second.index - first.index
