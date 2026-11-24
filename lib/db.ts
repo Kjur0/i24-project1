@@ -1,5 +1,6 @@
 import "server-only"
 
+import { type post } from "@/types/post"
 import { session } from "@/types/session"
 import { user } from "@/types/user"
 
@@ -7,7 +8,7 @@ import db from "@/lib/mongo"
 import { ObjectId } from "mongodb"
 
 export const users = db.collection<user>("users")
-export const posts = db.collection("posts")
+export const posts = db.collection<post>("posts")
 export const sessions = db.collection<session>("sessions")
 
 export async function userExists(email: string) {

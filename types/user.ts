@@ -24,10 +24,11 @@ export type user = {
   role: "user" | "admin" | "moderator"
   username: string
   verified: boolean
+  avatar?: string
   otp?: userOTP
 }
 
 export type currentUser = Pick<
   user,
-  "email" | "username" | "role" | "verified" | "createdAt"
+  "email" | "username" | "role" | "verified" | "createdAt" | "avatar"
 > & { id: string }
