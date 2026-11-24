@@ -1,4 +1,4 @@
-import type { comment, post } from "@/types/post"
+import type { post } from "@/types/post"
 
 import { CreateCommentDialog } from "@/components/create-content-dialog"
 import { DeleteContentDialog } from "@/components/delete-content-dialog"
@@ -26,8 +26,6 @@ type PostProps = {
   post: post
   postId?: string
   currentUserId?: string
-  comments?: Array<{ comment: comment; index: number }>
-  totalComments?: number
 }
 
 export function PostSkeleton() {
@@ -44,22 +42,14 @@ export function PostSkeleton() {
   )
 }
 
-export async function Post({
-  post,
-  postId,
-  currentUserId,
-  comments = (post.comments ?? []).map((comment, index) => ({
-    comment,
-    index,
-  })),
-  totalComments = post.comments?.length ?? 0,
-}: PostProps) {
+export async function Post({ post, postId, currentUserId }: PostProps) {
   const user = await getUserById(post.author)
   const isAuthor = user?._id.toString() === currentUserId
   const commentsWithAuthors = await Promise.all(
-    comments.map(async (entry) => ({
-      ...entry,
-      author: await getUserById(entry.comment.author),
+    (post.comments ?? []).map(async (comment, index) => ({
+      comment,
+      index,
+      author: await getUserById(comment.author),
     }))
   )
 
@@ -96,11 +86,11 @@ export async function Post({
           </ButtonGroup>
         </ItemActions>
       )}
-      {totalComments > 0 && (
+      {(post.comments?.length ?? 0) > 0 && (
         <ItemFooter className="justify-start">
           <Collapsible>
             <CollapsibleTrigger>
-              Komentarze ({totalComments})
+              Komentarze ({post.comments?.length})
             </CollapsibleTrigger>
             <CollapsibleContent>
               {commentsWithAuthors.map(({ comment, index, author }) => {
@@ -148,11 +138,6 @@ export async function Post({
                   </Item>
                 )
               })}
-              {comments.length === 0 && (
-                <p className="py-2 text-sm text-muted-foreground">
-                  Brak komentarzy na tej stronie.
-                </p>
-              )}
             </CollapsibleContent>
           </Collapsible>
         </ItemFooter>

@@ -1,7 +1,5 @@
 import { Fragment } from "react"
 
-import { type comment } from "@/types/post"
-
 import { CreatePostDialog } from "@/components/create-content-dialog"
 import { Post } from "@/components/post"
 import { ItemGroup, ItemSeparator } from "@/components/ui/item"
@@ -17,7 +15,7 @@ import {
 import { getCurrentUser } from "@/lib/auth"
 import { posts } from "@/lib/db"
 
-const COMMENTS_PER_PAGE = 30
+const POSTS_PER_PAGE = 30
 
 type PageProps = {
   searchParams: Promise<{ page?: string | string[] }>
@@ -51,19 +49,12 @@ function getPageNumbers(page: number, totalPages: number) {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const [{ page: requestedPage }, currentUser, allPosts] = await Promise.all([
+  const [{ page: requestedPage }, currentUser, totalPosts] = await Promise.all([
     searchParams,
     getCurrentUser(),
-    posts.find({}).sort({ createdAt: -1 }).toArray(),
+    posts.countDocuments({}),
   ])
-  const comments = allPosts.flatMap((post) =>
-    (post.comments ?? []).map((comment, index) => ({
-      postId: post._id.toString(),
-      comment,
-      index,
-    }))
-  )
-  const totalPages = Math.max(1, Math.ceil(comments.length / COMMENTS_PER_PAGE))
+  const totalPages = Math.max(1, Math.ceil(totalPosts / POSTS_PER_PAGE))
   const rawPage = Array.isArray(requestedPage)
     ? requestedPage[0]
     : requestedPage
@@ -72,18 +63,12 @@ export default async function Page({ searchParams }: PageProps) {
     Number.isSafeInteger(parsedPage) && parsedPage > 0
       ? Math.min(parsedPage, totalPages)
       : 1
-  const pageStart = (page - 1) * COMMENTS_PER_PAGE
-  const pageComments = comments.slice(pageStart, pageStart + COMMENTS_PER_PAGE)
-  const visibleCommentsByPostId = new Map<
-    string,
-    Array<{ comment: comment; index: number }>
-  >()
-
-  for (const { postId, comment, index } of pageComments) {
-    const visibleComments = visibleCommentsByPostId.get(postId) ?? []
-    visibleComments.push({ comment, index })
-    visibleCommentsByPostId.set(postId, visibleComments)
-  }
+  const pagePosts = await posts
+    .find({})
+    .sort({ createdAt: -1, _id: -1 })
+    .skip((page - 1) * POSTS_PER_PAGE)
+    .limit(POSTS_PER_PAGE)
+    .toArray()
 
   const pageNumbers = getPageNumbers(page, totalPages)
 
@@ -94,9 +79,9 @@ export default async function Page({ searchParams }: PageProps) {
         {currentUser && <CreatePostDialog />}
       </div>
 
-      {allPosts.length > 0 ? (
+      {pagePosts.length > 0 ? (
         <ItemGroup>
-          {allPosts.map((post, index) => {
+          {pagePosts.map((post, index) => {
             const postId = post._id.toString()
 
             return (
@@ -105,10 +90,8 @@ export default async function Page({ searchParams }: PageProps) {
                   post={post}
                   postId={postId}
                   currentUserId={currentUser?.id}
-                  comments={visibleCommentsByPostId.get(postId) ?? []}
-                  totalComments={post.comments?.length ?? 0}
                 />
-                {index < allPosts.length - 1 && <ItemSeparator />}
+                {index < pagePosts.length - 1 && <ItemSeparator />}
               </Fragment>
             )
           })}
