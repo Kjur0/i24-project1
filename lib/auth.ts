@@ -93,6 +93,7 @@ export async function getCurrentUser(): Promise<currentUser | null> {
     role: user.role,
     verified: user.verified,
     createdAt: user.createdAt,
+    avatar: user.avatar,
   }
 }
 

@@ -57,8 +57,10 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenu>
         <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <Avatar>
-            <AvatarImage src={"not-available"} alt={"not-available"} />
-            <AvatarFallback>{user.email.substring(0, 2)}</AvatarFallback>
+            <AvatarImage src={user?.avatar} alt={user?.username} />
+            <AvatarFallback>
+              {user?.username.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 text-left text-sm leading-tight hidden sm:grid">
             <span className="truncate font-medium">{user.username}</span>
