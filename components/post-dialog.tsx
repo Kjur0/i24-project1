@@ -324,7 +324,7 @@ export function PostDialog({
                   <p
                     ref={postContentRef}
                     tabIndex={-1}
-                    className="min-w-0 flex-1 whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]"
+                    className="min-w-0 flex-1 whitespace-pre-wrap wrap-break-word text-sm leading-relaxed"
                   >
                     {detail.content}
                   </p>
@@ -636,7 +636,7 @@ function PostDialogComment({
             </ButtonGroup>
           </form>
         ) : (
-          <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+          <p className="whitespace-pre-wrap wrap-anywhere text-sm leading-relaxed text-muted-foreground">
             {comment.title && (
               <span className="mb-1 block font-semibold text-foreground">
                 {comment.title}
