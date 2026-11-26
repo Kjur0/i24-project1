@@ -26,6 +26,7 @@ export type user = {
   verified: boolean
   avatar?: string
   otp?: userOTP
+  pendingEmail?: string
 }
 
 export type currentUser = Pick<

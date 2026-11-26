@@ -1,3 +1,5 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+
 import type { post } from "@/types/post"
 
 import { PostDialog } from "@/components/post-dialog"
@@ -77,12 +79,19 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
     >
       <Item>
         <ItemMedia>
-          <Avatar>
-            <AvatarImage src={user?.avatar} alt={user?.username} />
-            <AvatarFallback>
-              {user?.username.substring(0, 2).toUpperCase() ?? "?"}
-            </AvatarFallback>
-          </Avatar>
+          <Tooltip>
+            <TooltipTrigger>
+              <Avatar>
+                <AvatarImage src={user?.avatar} alt={user?.username} />
+                <AvatarFallback>
+                  {user?.username.substring(0, 2).toUpperCase() ?? "?"}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{user?.username}</p>
+            </TooltipContent>
+          </Tooltip>
         </ItemMedia>
         <ItemContent
           data-post-dialog-open=""

@@ -1,5 +1,3 @@
-import { use } from "react"
-
 import Link from "next/link"
 
 import { currentUser } from "@/types/user"
@@ -17,16 +15,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { getCurrentUser, isAuthenticated, logout } from "@/lib/auth"
+import { getCurrentUser, logout } from "@/lib/auth"
 import { LogOutIcon } from "lucide-react"
 
 type UserMenuProps = {
   user: currentUser
 }
 
-export function SiteHeader() {
-  const loggedIn = use(isAuthenticated())
-  const user = use(loggedIn ? getCurrentUser() : Promise.resolve(null))
+export async function SiteHeader() {
+  const user = await getCurrentUser()
 
   return (
     <header className="sticky top-0 z-50 flex w-full items-center bg-sidebar-primary p-4">
@@ -34,8 +31,8 @@ export function SiteHeader() {
         <Logo />
       </Link>
       <div className="ml-auto flex items-center justify-end gap-4">
-        {loggedIn ? (
-          <UserMenu user={user!} />
+        {user ? (
+          <UserMenu user={user} />
         ) : (
           <ButtonGroup>
             <Link href="/login">
@@ -57,9 +54,9 @@ export function UserMenu({ user }: UserMenuProps) {
       <DropdownMenu>
         <DropdownMenuTrigger render={<Button variant="ghost" />}>
           <Avatar>
-            <AvatarImage src={user?.avatar} alt={user?.username} />
+            <AvatarImage src={user?.avatar} alt={user.username} />
             <AvatarFallback>
-              {user?.username.substring(0, 2).toUpperCase()}
+              {user.username.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 text-left text-sm leading-tight hidden sm:grid">
@@ -77,8 +74,12 @@ export function UserMenu({ user }: UserMenuProps) {
           </DropdownMenuGroup>
           <DropdownMenuGroup>
             <DropdownMenuLabel>Ustawnienia</DropdownMenuLabel>
-            <DropdownMenuItem>Profil</DropdownMenuItem>
-            <DropdownMenuItem>Logowanie</DropdownMenuItem>
+            <Link href="/settings/profile">
+              <DropdownMenuItem>Profil</DropdownMenuItem>
+            </Link>
+            <Link href="/settings/login">
+              <DropdownMenuItem>Logowanie</DropdownMenuItem>
+            </Link>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
