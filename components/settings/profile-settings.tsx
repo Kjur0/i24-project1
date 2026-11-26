@@ -1,12 +1,17 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { startTransition, useActionState, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 import {
   deleteAccount,
   updateProfile,
   type SettingsActionState,
 } from "@/app/(main)/settings/actions"
+
+import * as z from "zod"
+import { profileSettingsSchema } from "@/components/settings/schemas"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -65,22 +70,10 @@ function DeleteAccountDialog() {
         </DialogHeader>
         <form action={formAction}>
           <FieldGroup>
-            <Field>
-              <FieldLabel htmlFor="delete-confirmation">
-                Wpisz USUŃ, aby potwierdzić
-              </FieldLabel>
-              <Input
-                id="delete-confirmation"
-                name="confirmation"
-                autoComplete="off"
-                required
-              />
-              <FieldDescription>
-                Usuniemy także komentarze dodane przez Ciebie do cudzych wpisów.
-              </FieldDescription>
-            </Field>
             {state.status === "error" && (
-              <FieldError>{state.message}</FieldError>
+              <Field>
+                <FieldError>{state.message}</FieldError>
+              </Field>
             )}
             <DialogFooter>
               <Button
@@ -88,6 +81,7 @@ function DeleteAccountDialog() {
                 variant="outline"
                 onClick={() => setOpen(false)}
                 disabled={isPending}
+                autoFocus
               >
                 Anuluj
               </Button>
@@ -107,6 +101,21 @@ export function ProfileSettings({ username, avatar }: ProfileSettingsProps) {
     updateProfile,
     initialState
   )
+  const { control, handleSubmit, formState } = useForm<
+    z.infer<typeof profileSettingsSchema>
+  >({
+    mode: "onTouched",
+    resolver: zodResolver(profileSettingsSchema),
+    defaultValues: { username, avatar },
+    shouldFocusError: true,
+  })
+
+  const onSubmit = handleSubmit((values) => {
+    const formData = new FormData()
+    formData.set("username", values.username)
+    formData.set("avatar", values.avatar)
+    startTransition(() => formAction(formData))
+  })
 
   return (
     <section className="flex flex-col gap-6 p-4 md:p-8">
@@ -125,36 +134,52 @@ export function ProfileSettings({ username, avatar }: ProfileSettingsProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction}>
+          <form onSubmit={onSubmit} aria-label="Zmień dane profilu">
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="username">Nazwa użytkownika</FieldLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  defaultValue={username}
-                  autoComplete="nickname"
-                  minLength={3}
-                  maxLength={50}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="avatar">Adres URL avatara</FieldLabel>
-                <Input
-                  id="avatar"
-                  name="avatar"
-                  type="url"
-                  defaultValue={avatar}
-                  placeholder="https://example.com/avatar.png"
-                  autoComplete="url"
-                  maxLength={2048}
-                  aria-describedby="avatar-description"
-                />
-                <FieldDescription id="avatar-description">
-                  Pozostaw puste, aby usunąć obecny avatar.
-                </FieldDescription>
-              </Field>
+              <Controller
+                name="username"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="username">
+                      Nazwa użytkownika
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="username"
+                      autoComplete="nickname"
+                      minLength={3}
+                      maxLength={50}
+                      aria-invalid={fieldState.invalid}
+                      required
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+              <Controller
+                name="avatar"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="avatar">Adres URL avatara</FieldLabel>
+                    <Input
+                      {...field}
+                      id="avatar"
+                      type="url"
+                      placeholder="https://example.com/avatar.png"
+                      autoComplete="url"
+                      maxLength={2048}
+                      aria-invalid={fieldState.invalid}
+                      aria-describedby="avatar-description"
+                    />
+                    <FieldDescription id="avatar-description">
+                      Pozostaw puste, aby usunąć obecny avatar.
+                    </FieldDescription>
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
               <Field>
                 {state.status === "error" && (
                   <FieldError>{state.message}</FieldError>
@@ -164,8 +189,13 @@ export function ProfileSettings({ username, avatar }: ProfileSettingsProps) {
                     {state.message}
                   </p>
                 )}
-                <Button type="submit" disabled={isPending}>
-                  {isPending ? "Zapisywanie..." : "Zapisz zmiany"}
+                <Button
+                  type="submit"
+                  disabled={isPending || formState.isSubmitting}
+                >
+                  {isPending || formState.isSubmitting
+                    ? "Zapisywanie..."
+                    : "Zapisz zmiany"}
                 </Button>
               </Field>
             </FieldGroup>

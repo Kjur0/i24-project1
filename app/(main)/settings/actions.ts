@@ -5,10 +5,17 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import * as z from "zod"
+import { otpFormSchema } from "@/components/forms/schemas"
+import {
+  emailAddressSchema,
+  passkeyNameSchema,
+  profileSettingsSchema,
+} from "@/components/settings/schemas"
 
 import { getCurrentUser } from "@/lib/auth"
 import { posts, sessions, users } from "@/lib/db"
 import { mongo } from "@/lib/mongo"
+import { sendOTP, verifyOTP } from "@/lib/otp"
 import { ObjectId } from "mongodb"
 
 import crypto from "node:crypto"
@@ -18,33 +25,22 @@ export type SettingsActionState =
   | { status: "success"; message: string }
   | { status: "error"; message: string }
 
-const profileSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .min(3, "Nazwa użytkownika musi mieć co najmniej 3 znaki.")
-    .max(50, "Nazwa użytkownika może mieć maksymalnie 50 znaków."),
-  avatar: z
-    .string()
-    .trim()
-    .max(2048, "Adres avatara jest zbyt długi.")
-    .refine((value) => {
-      if (!value) return true
-
-      try {
-        const url = new URL(value)
-        return url.protocol === "https:" || url.protocol === "http:"
-      } catch {
-        return false
-      }
-    }, "Podaj poprawny adres URL zaczynający się od http:// lub https://."),
-})
-
-const passkeyNameSchema = z
-  .string()
-  .trim()
-  .min(1, "Nazwa klucza jest wymagana.")
-  .max(80, "Nazwa klucza może mieć maksymalnie 80 znaków.")
+export type EmailChangeActionState =
+  | { status: "idle" }
+  | { status: "code_sent"; currentEmail: string; email: string }
+  | {
+      status: "request_error"
+      currentEmail: string
+      email: string
+      message: string
+    }
+  | {
+      status: "verification_error"
+      currentEmail: string
+      email: string
+      message: string
+    }
+  | { status: "success"; email: string; message: string }
 
 const passkeyIdSchema = z.string().min(1)
 
@@ -58,7 +54,7 @@ export async function updateProfile(
     return { status: "error", message: "Sesja wygasła. Zaloguj się ponownie." }
   }
 
-  const parsed = profileSchema.safeParse({
+  const parsed = profileSettingsSchema.safeParse({
     username: formData.get("username"),
     avatar: formData.get("avatar"),
   })
@@ -88,19 +84,14 @@ export async function updateProfile(
 
 export async function deleteAccount(
   _previousState: SettingsActionState,
-  formData: FormData
+  _formData: FormData
 ): Promise<SettingsActionState> {
+  void _previousState
+  void _formData
   const currentUser = await getCurrentUser()
 
   if (!currentUser) {
     return { status: "error", message: "Sesja wygasła. Zaloguj się ponownie." }
-  }
-
-  if (formData.get("confirmation") !== "USUŃ") {
-    return {
-      status: "error",
-      message: "Wpisz USUŃ, aby potwierdzić trwałe usunięcie konta.",
-    }
   }
 
   const userId = new ObjectId(currentUser.id)
@@ -132,6 +123,192 @@ export async function deleteAccount(
   const cookieStore = await cookies()
   cookieStore.delete("session_token")
   redirect("/", "replace")
+}
+
+export async function changeEmail(
+  _previousState: EmailChangeActionState,
+  formData: FormData
+): Promise<EmailChangeActionState> {
+  const currentUser = await getCurrentUser()
+  const step = formData.get("step")
+  const rawEmail = formData.get("email")
+  const submittedEmail = typeof rawEmail === "string" ? rawEmail.trim() : ""
+
+  if (!currentUser) {
+    return {
+      status: "request_error",
+      currentEmail: "",
+      email: submittedEmail,
+      message: "Sesja wygasła. Zaloguj się ponownie.",
+    }
+  }
+
+  const userId = new ObjectId(currentUser.id)
+  const currentEmail = currentUser.email
+
+  if (step === "request") {
+    const parsedEmail = emailAddressSchema.safeParse(submittedEmail)
+
+    if (!parsedEmail.success) {
+      return {
+        status: "request_error",
+        currentEmail,
+        email: submittedEmail,
+        message:
+          parsedEmail.error.issues[0]?.message ??
+          "Podaj poprawny adres e-mail.",
+      }
+    }
+
+    const email = parsedEmail.data.toLowerCase()
+
+    if (email === currentEmail.toLowerCase()) {
+      return {
+        status: "request_error",
+        currentEmail,
+        email,
+        message: "Ten adres e-mail jest już przypisany do konta.",
+      }
+    }
+
+    const existingUser = await users.findOne(
+      { email, _id: { $ne: userId } },
+      { projection: { _id: 1 } }
+    )
+
+    if (existingUser) {
+      return {
+        status: "request_error",
+        currentEmail,
+        email,
+        message: "Ten adres e-mail jest już używany.",
+      }
+    }
+
+    const result = await sendOTP(email, "email-change")
+
+    if (result !== "success") {
+      return {
+        status: "request_error",
+        currentEmail,
+        email,
+        message:
+          result === "user_not_found"
+            ? "Sesja wygasła. Zaloguj się ponownie."
+            : "Nie udało się wygenerować kodu weryfikacyjnego.",
+      }
+    }
+
+    return { status: "code_sent", currentEmail, email }
+  }
+
+  if (step === "verify") {
+    const parsedEmail = emailAddressSchema.safeParse(submittedEmail)
+    const parsedOTP = otpFormSchema.safeParse({
+      otp: formData.get("otp"),
+    })
+
+    if (!parsedEmail.success || !parsedOTP.success) {
+      return {
+        status: "verification_error",
+        currentEmail,
+        email: submittedEmail,
+        message: "Podaj poprawny adres e-mail i ośmioznakowy kod.",
+      }
+    }
+
+    const email = parsedEmail.data.toLowerCase()
+    const existingUser = await users.findOne(
+      { email, _id: { $ne: userId } },
+      { projection: { _id: 1 } }
+    )
+
+    if (existingUser) {
+      return {
+        status: "verification_error",
+        currentEmail,
+        email,
+        message: "Ten adres e-mail jest już używany.",
+      }
+    }
+
+    const verification = await verifyOTP(
+      email,
+      parsedOTP.data.otp,
+      "email-change"
+    )
+
+    switch (verification) {
+      case "success": {
+        const update = await users.updateOne(
+          {
+            _id: userId,
+            pendingEmail: email,
+            otp: { $exists: false },
+          },
+          {
+            $set: { email, verified: true },
+            $unset: { pendingEmail: "" },
+          }
+        )
+
+        if (!update.acknowledged || update.matchedCount !== 1) {
+          return {
+            status: "verification_error",
+            currentEmail,
+            email,
+            message:
+              "Nie udało się zaktualizować adresu. Poproś o nowy kod i spróbuj ponownie.",
+          }
+        }
+
+        revalidatePath("/", "layout")
+        revalidatePath("/settings/login")
+        return {
+          status: "success",
+          email,
+          message: "Adres e-mail został zaktualizowany.",
+        }
+      }
+      case "invalid_otp":
+        return {
+          status: "verification_error",
+          currentEmail,
+          email,
+          message: "Nieprawidłowy kod weryfikacyjny.",
+        }
+      case "max_attempts":
+        return {
+          status: "verification_error",
+          currentEmail,
+          email,
+          message: "Przekroczono limit prób. Poproś o nowy kod.",
+        }
+      case "user_not_found":
+        return {
+          status: "verification_error",
+          currentEmail,
+          email,
+          message: "Nie znaleziono aktywnego kodu dla tego adresu.",
+        }
+      case "db_error":
+        return {
+          status: "verification_error",
+          currentEmail,
+          email,
+          message: "Nie udało się zweryfikować kodu. Spróbuj ponownie.",
+        }
+      default:
+        throw new Error("Unknown email change OTP verification result")
+    }
+  }
+
+  return {
+    status: "request_error",
+    currentEmail,
+    email: submittedEmail,
+    message: "Nieprawidłowe żądanie zmiany adresu e-mail.",
+  }
 }
 
 export async function renamePasskey(

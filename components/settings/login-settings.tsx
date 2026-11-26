@@ -1,15 +1,26 @@
 "use client"
 
-import { useActionState, useEffect, useState } from "react"
+import { startTransition, useActionState, useEffect, useState } from "react"
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 
 import Link from "next/link"
 
 import {
+  changeEmail,
   removePasskey,
   renamePasskey,
   revokeSession,
+  type EmailChangeActionState,
   type SettingsActionState,
 } from "@/app/(main)/settings/actions"
+
+import * as z from "zod"
+import { otpFormSchema } from "@/components/forms/schemas"
+import {
+  emailChangeRequestSchema,
+  passkeyNameFormSchema,
+} from "@/components/settings/schemas"
 
 import { Button, buttonVariants } from "@/components/ui/button"
 import {
@@ -30,6 +41,7 @@ import {
 } from "@/components/ui/dialog"
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -38,6 +50,7 @@ import { Input } from "@/components/ui/input"
 import { KeyRoundIcon, PlusIcon, Trash2Icon } from "lucide-react"
 
 const initialState: SettingsActionState = { status: "idle" }
+const initialEmailChangeState: EmailChangeActionState = { status: "idle" }
 
 export type SettingsPasskey = {
   id: string
@@ -113,18 +126,200 @@ function LocalDateTime({ value }: { value: number }) {
   return <time>{display.value === value ? display.text : "—"}</time>
 }
 
+function EmailChangeCard({ email }: { email: string }) {
+  const [state, formAction, isPending] = useActionState(
+    changeEmail,
+    initialEmailChangeState
+  )
+  const requestForm = useForm<z.infer<typeof emailChangeRequestSchema>>({
+    mode: "onTouched",
+    resolver: zodResolver(emailChangeRequestSchema),
+    defaultValues: { email: "" },
+    shouldFocusError: true,
+  })
+  const verificationForm = useForm<z.infer<typeof otpFormSchema>>({
+    mode: "onTouched",
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: { otp: "" },
+    shouldFocusError: true,
+  })
+  const currentEmail =
+    state.status === "success"
+      ? state.email
+      : state.status === "idle"
+        ? email
+        : state.currentEmail || email
+  const verificationEmail =
+    state.status === "code_sent" || state.status === "verification_error"
+      ? state.email
+      : null
+  const onRequestSubmit = requestForm.handleSubmit(({ email: newEmail }) => {
+    const formData = new FormData()
+    formData.set("step", "request")
+    formData.set("email", newEmail)
+    startTransition(() => formAction(formData))
+  })
+  const onVerificationSubmit = verificationForm.handleSubmit(({ otp }) => {
+    if (!verificationEmail) return
+
+    const formData = new FormData()
+    formData.set("step", "verify")
+    formData.set("email", verificationEmail)
+    formData.set("otp", otp)
+    startTransition(() => formAction(formData))
+  })
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Adres e-mail</CardTitle>
+        <CardDescription>
+          Ten adres jest powiązany z Twoim kontem i służy do logowania.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-1">
+          <p className="font-medium">{currentEmail}</p>
+          <p className="text-sm text-muted-foreground">
+            Potwierdź nowy adres kodem weryfikacyjnym, zanim zostanie zapisany.
+          </p>
+        </div>
+        <form
+          onSubmit={onRequestSubmit}
+          aria-label="Zażądaj zmiany adresu e-mail"
+          className="mt-4"
+        >
+          <FieldGroup>
+            <Controller
+              name="email"
+              control={requestForm.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  data-invalid={
+                    fieldState.invalid || state.status === "request_error"
+                  }
+                >
+                  <FieldLabel htmlFor="new-email">Nowy adres e-mail</FieldLabel>
+                  <Input
+                    {...field}
+                    id="new-email"
+                    type="email"
+                    autoComplete="email"
+                    maxLength={254}
+                    aria-invalid={
+                      fieldState.invalid || state.status === "request_error"
+                    }
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    required
+                  />
+                  <FieldDescription>
+                    Wpisz adres, do którego masz dostęp.
+                  </FieldDescription>
+                  <FieldError errors={[fieldState.error]} />
+                  {state.status === "request_error" && (
+                    <FieldError>{state.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+            <Field>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? "Generowanie kodu..." : "Wyślij kod weryfikacyjny"}
+              </Button>
+            </Field>
+          </FieldGroup>
+        </form>
+
+        {verificationEmail && (
+          <form
+            onSubmit={onVerificationSubmit}
+            aria-label="Potwierdź zmianę adresu e-mail"
+            className="mt-4"
+          >
+            <FieldGroup>
+              <Controller
+                name="otp"
+                control={verificationForm.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email-change-otp">
+                      Kod weryfikacyjny
+                    </FieldLabel>
+                    <FieldDescription>
+                      Wpisz ośmioznakowy kod dla {verificationEmail}.
+                    </FieldDescription>
+                    <Input
+                      {...field}
+                      id="email-change-otp"
+                      type="text"
+                      autoComplete="one-time-code"
+                      maxLength={8}
+                      pattern="[0-9]{6}wr"
+                      aria-invalid={
+                        fieldState.invalid ||
+                        state.status === "verification_error"
+                      }
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      required
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                    {state.status === "verification_error" && (
+                      <FieldError>{state.message}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
+              <Field>
+                <Button
+                  type="submit"
+                  disabled={
+                    isPending || verificationForm.formState.isSubmitting
+                  }
+                >
+                  {isPending || verificationForm.formState.isSubmitting
+                    ? "Weryfikowanie..."
+                    : "Potwierdź nowy adres"}
+                </Button>
+              </Field>
+            </FieldGroup>
+          </form>
+        )}
+
+        {state.status === "success" && (
+          <p role="status" className="mt-4 text-sm text-muted-foreground">
+            {state.message}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 function PasskeyItem({ passkey }: { passkey: SettingsPasskey }) {
   const renameAction = renamePasskey.bind(null, passkey.id)
   const [renameState, renameFormAction, isRenaming] = useActionState(
     renameAction,
     initialState
   )
+  const renameForm = useForm<z.infer<typeof passkeyNameFormSchema>>({
+    mode: "onTouched",
+    resolver: zodResolver(passkeyNameFormSchema),
+    defaultValues: { name: passkey.name },
+    shouldFocusError: true,
+  })
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const deleteAction = removePasskey.bind(null, passkey.id)
   const [deleteState, deleteFormAction, isDeleting] = useActionState(
     deleteAction,
     initialState
   )
+  const onRenameSubmit = renameForm.handleSubmit(({ name }) => {
+    const formData = new FormData()
+    formData.set("name", name)
+    startTransition(() => renameFormAction(formData))
+  })
 
   return (
     <div className="flex flex-col gap-4 border p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -139,22 +334,30 @@ function PasskeyItem({ passkey }: { passkey: SettingsPasskey }) {
       </div>
       <div className="flex flex-wrap gap-2">
         <form
-          action={renameFormAction}
+          onSubmit={onRenameSubmit}
+          aria-label={`Zmień nazwę klucza ${passkey.name}`}
           className="flex flex-wrap items-end gap-2"
         >
-          <Field>
-            <FieldLabel htmlFor={`passkey-name-${passkey.id}`}>
-              Nazwa klucza
-            </FieldLabel>
-            <Input
-              id={`passkey-name-${passkey.id}`}
-              name="name"
-              defaultValue={passkey.name}
-              autoComplete="off"
-              maxLength={80}
-              required
-            />
-          </Field>
+          <Controller
+            name="name"
+            control={renameForm.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`passkey-name-${passkey.id}`}>
+                  Nazwa klucza
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`passkey-name-${passkey.id}`}
+                  autoComplete="off"
+                  maxLength={80}
+                  aria-invalid={fieldState.invalid}
+                  required
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
           <Button type="submit" variant="outline" disabled={isRenaming}>
             {isRenaming ? "Zapisywanie..." : "Zmień nazwę"}
           </Button>
@@ -276,20 +479,7 @@ export function LoginSettings({
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Adres e-mail</CardTitle>
-          <CardDescription>
-            Ten adres jest powiązany z Twoim kontem i służy do logowania.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="font-medium">{email}</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Zmiana adresu e-mail będzie dostępna po wdrożeniu weryfikacji kodem.
-          </p>
-        </CardContent>
-      </Card>
+      <EmailChangeCard email={email} />
 
       <Card>
         <CardHeader>

@@ -28,7 +28,7 @@ function SettingsContent({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <Sidebar className="top-[4.5rem] h-[calc(100dvh-4.5rem)]">
+      <Sidebar className="top-18 h-[calc(100dvh-4.5rem)]">
         <SidebarHeader>
           <div className="flex flex-col gap-1 px-4 py-6">
             <h1 className="text-xl font-semibold">Ustawienia</h1>
