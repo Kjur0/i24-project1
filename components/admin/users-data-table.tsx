@@ -432,7 +432,7 @@ export function UsersDataTable({
       </div>
 
       <Table
-        className="min-w-[48rem]"
+        className="min-w-3xl"
         containerProps={{
           role: "region",
           tabIndex: 0,
