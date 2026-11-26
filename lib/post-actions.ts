@@ -51,6 +51,7 @@ export async function createPost(
   })
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
 
@@ -97,6 +98,7 @@ export async function createComment(
   }
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
 
@@ -144,6 +146,7 @@ export async function updatePost(
   }
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
 
@@ -198,6 +201,7 @@ export async function updateComment(
   }
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
 
@@ -225,6 +229,7 @@ export async function deletePost(postId: string): Promise<postActionResult> {
   }
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
 
@@ -279,5 +284,6 @@ export async function deleteComment(
   }
 
   revalidatePath("/")
+  revalidatePath("/dashboard")
   return { success: true }
 }
