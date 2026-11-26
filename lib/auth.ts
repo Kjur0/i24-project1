@@ -97,6 +97,16 @@ export async function getCurrentUser(): Promise<currentUser | null> {
   }
 }
 
+export async function requireCurrentUser() {
+  const user = await getCurrentUser()
+
+  if (!user) {
+    redirect("/", "replace")
+  }
+
+  return user
+}
+
 export async function isAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies()
 
