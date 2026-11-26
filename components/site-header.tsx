@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { getCurrentUser, logout } from "@/lib/auth"
-import { LogOutIcon } from "lucide-react"
+import { LogOutIcon, UserPenIcon, UserShieldIcon } from "lucide-react"
 
 type UserMenuProps = {
   user: currentUser
@@ -59,6 +59,20 @@ export function UserMenu({ user }: UserMenuProps) {
               {user.username.substring(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
+          {user.role === "admin" && (
+            <UserShieldIcon
+              data-icon="inline-end"
+              role="img"
+              aria-label="Administrator"
+            />
+          )}
+          {user.role === "moderator" && (
+            <UserPenIcon
+              data-icon="inline-end"
+              role="img"
+              aria-label="Moderator"
+            />
+          )}
           <div className="flex-1 text-left text-sm leading-tight hidden sm:grid">
             <span className="truncate font-medium">{user.username}</span>
             <span className="truncate text-xs text-foreground/70">
@@ -71,6 +85,11 @@ export function UserMenu({ user }: UserMenuProps) {
             <Link href="/dashboard">
               <DropdownMenuItem>Moje konto</DropdownMenuItem>
             </Link>
+            {user.role === "admin" && (
+              <Link href="/admin" className="max-md:hidden">
+                <DropdownMenuItem>Panel administratora</DropdownMenuItem>
+              </Link>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuGroup>
             <DropdownMenuLabel>Ustawnienia</DropdownMenuLabel>

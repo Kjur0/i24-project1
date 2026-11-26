@@ -1,6 +1,9 @@
+import Link from "next/link"
+
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
 import type { post } from "@/types/post"
+import type { user } from "@/types/user"
 
 import { PostDialog } from "@/components/post-dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -28,6 +31,7 @@ type PostProps = {
   post: post
   postId?: string
   currentUserId?: string
+  currentUserRole?: user["role"]
 }
 
 export function PostSkeleton() {
@@ -44,9 +48,16 @@ export function PostSkeleton() {
   )
 }
 
-export async function Post({ post, postId, currentUserId }: PostProps) {
+export async function Post({
+  post,
+  postId,
+  currentUserId,
+  currentUserRole,
+}: PostProps) {
   const user = await getUserById(post.author)
   const isAuthor = user?._id.toString() === currentUserId
+  const canModerate =
+    currentUserRole === "admin" || currentUserRole === "moderator"
   const commentsWithAuthors = await Promise.all(
     (post.comments ?? []).map(async (comment, index) => ({
       comment,
@@ -61,8 +72,10 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
         title: post.title,
         content: post.content,
         authorName: user?.username,
+        authorId: user?._id.toString(),
         authorAvatar: user?.avatar,
         isAuthor,
+        canModerate,
         comments: commentsWithAuthors.map(({ comment, index, author }) => ({
           key: `${comment.createdAt.toISOString()}-${comment.author.toString()}-${index}`,
           index,
@@ -70,8 +83,10 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
           title: comment.title,
           content: comment.content,
           authorName: author?.username,
+          authorId: author?._id.toString(),
           authorAvatar: author?.avatar,
           isAuthor: author?._id.toString() === currentUserId,
+          canDelete: author?._id.toString() === currentUserId || canModerate,
         })),
       }}
       postId={postId}
@@ -80,7 +95,13 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
       <Item>
         <ItemMedia>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger
+              render={
+                user ? (
+                  <Link href={`/profile/${user._id.toString()}`} />
+                ) : undefined
+              }
+            >
               <Avatar>
                 <AvatarImage src={user?.avatar} alt={user?.username} />
                 <AvatarFallback>
@@ -103,30 +124,30 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
           <ItemTitle>{post.title}</ItemTitle>
           <ItemDescription>{post.content}</ItemDescription>
         </ItemContent>
-        {postId && (isAuthor || currentUserId) && (
+        {postId && (isAuthor || canModerate || currentUserId) && (
           <ItemActions>
             <ButtonGroup>
               {isAuthor && (
-                <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label="Edytuj wpis"
-                    data-post-dialog-action="post-edit"
-                  >
-                    <SquarePenIcon />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label="Usuń wpis"
-                    data-post-dialog-action="post-delete"
-                  >
-                    <Trash2Icon />
-                  </Button>
-                </>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Edytuj wpis"
+                  data-post-dialog-action="post-edit"
+                >
+                  <SquarePenIcon />
+                </Button>
+              )}
+              {(isAuthor || canModerate) && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Usuń wpis"
+                  data-post-dialog-action="post-delete"
+                >
+                  <Trash2Icon />
+                </Button>
               )}
               {currentUserId && (
                 <Button type="button" size="sm" data-post-dialog-action="view">
@@ -152,16 +173,23 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
                       key={`${comment.createdAt.toISOString()}-${comment.author.toString()}-${index}`}
                     >
                       <ItemMedia>
-                        <Avatar>
-                          <AvatarImage
-                            src={author?.avatar}
-                            alt={author?.username}
-                          />
-                          <AvatarFallback>
-                            {author?.username.substring(0, 2).toUpperCase() ??
-                              "?"}
-                          </AvatarFallback>
-                        </Avatar>
+                        {author ? (
+                          <Link href={`/profile/${author._id.toString()}`}>
+                            <Avatar>
+                              <AvatarImage
+                                src={author.avatar}
+                                alt={author.username}
+                              />
+                              <AvatarFallback>
+                                {author.username.substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </Link>
+                        ) : (
+                          <Avatar>
+                            <AvatarFallback>?</AvatarFallback>
+                          </Avatar>
+                        )}
                       </ItemMedia>
                       <ItemContent
                         data-post-dialog-open=""
@@ -175,19 +203,21 @@ export async function Post({ post, postId, currentUserId }: PostProps) {
                         )}
                         <ItemDescription>{comment.content}</ItemDescription>
                       </ItemContent>
-                      {postId && isCommentAuthor && (
+                      {postId && (isCommentAuthor || canModerate) && (
                         <ItemActions>
                           <ButtonGroup>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon-xs"
-                              aria-label="Edytuj komentarz"
-                              data-post-dialog-action="comment-edit"
-                              data-comment-index={index}
-                            >
-                              <SquarePenIcon />
-                            </Button>
+                            {isCommentAuthor && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon-xs"
+                                aria-label="Edytuj komentarz"
+                                data-post-dialog-action="comment-edit"
+                                data-comment-index={index}
+                              >
+                                <SquarePenIcon />
+                              </Button>
+                            )}
                             <Button
                               type="button"
                               variant="outline"

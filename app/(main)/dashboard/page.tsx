@@ -1,7 +1,9 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
+import { CreatePostDialog } from "@/components/create-content-dialog"
 import { Post } from "@/components/post"
+import { Button, buttonVariants } from "@/components/ui/button"
 import {
   Item,
   ItemContent,
@@ -32,6 +34,31 @@ export default async function Dashboard() {
         <p className="text-sm text-muted-foreground">
           Twoje wpisy i wpisy, które komentowałeś.
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <CreatePostDialog />
+          <Link href={`/profile/${currentUser.id}`}>
+            <Button variant="outline" size="sm">
+              Zobacz profil
+            </Button>
+          </Link>
+          <Link href="/settings/profile">
+            <Button variant="outline" size="sm">
+              Ustawienia profilu
+            </Button>
+          </Link>
+          {currentUser.role === "admin" && (
+            <Link
+              href="/admin"
+              className={buttonVariants({
+                variant: "outline",
+                size: "sm",
+                className: "max-md:hidden",
+              })}
+            >
+              Panel administratora
+            </Link>
+          )}
+        </div>
       </header>
 
       {userPosts.length > 0 ? (
@@ -55,6 +82,7 @@ export default async function Dashboard() {
                   post={post}
                   postId={postId}
                   currentUserId={currentUser.id}
+                  currentUserRole={currentUser.role}
                 />
                 {ownComments.map((comment, index) => (
                   <Item

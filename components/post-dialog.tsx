@@ -12,6 +12,7 @@ import {
 } from "react"
 import { cn } from "cn"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -46,8 +47,10 @@ type PostDetail = {
   title: string
   content: string
   authorName?: string
+  authorId?: string
   authorAvatar?: string
   isAuthor: boolean
+  canModerate: boolean
   comments: Array<{
     key: string
     index: number
@@ -55,8 +58,10 @@ type PostDetail = {
     title?: string
     content: string
     authorName?: string
+    authorId?: string
     authorAvatar?: string
     isAuthor: boolean
+    canDelete: boolean
   }>
 }
 
@@ -312,15 +317,11 @@ export function PostDialog({
                 </DialogHeader>
 
                 <div className="flex items-start gap-3">
-                  <Avatar>
-                    <AvatarImage
-                      src={detail.authorAvatar}
-                      alt={detail.authorName}
-                    />
-                    <AvatarFallback>
-                      {detail.authorName?.substring(0, 2).toUpperCase() ?? "?"}
-                    </AvatarFallback>
-                  </Avatar>
+                  <ProfileAvatar
+                    userId={detail.authorId}
+                    username={detail.authorName}
+                    avatar={detail.authorAvatar}
+                  />
                   <p
                     ref={postContentRef}
                     tabIndex={-1}
@@ -456,19 +457,21 @@ export function PostDialog({
                 </section>
               </div>
             </div>
-            {postId && detail.isAuthor && (
+            {postId && (detail.isAuthor || detail.canModerate) && (
               <div className="flex shrink-0 flex-col gap-4 pt-4">
                 <Separator />
                 <ButtonGroup className="ml-auto">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label="Edytuj wpis"
-                    onClick={() => openInMode("post-edit")}
-                  >
-                    <SquarePenIcon />
-                  </Button>
+                  {detail.isAuthor && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label="Edytuj wpis"
+                      onClick={() => openInMode("post-edit")}
+                    >
+                      <SquarePenIcon />
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     variant="outline"
@@ -560,12 +563,11 @@ function PostDialogComment({
 
   return (
     <div className="flex items-start gap-3">
-      <Avatar>
-        <AvatarImage src={comment.authorAvatar} alt={comment.authorName} />
-        <AvatarFallback>
-          {comment.authorName?.substring(0, 2).toUpperCase() ?? "?"}
-        </AvatarFallback>
-      </Avatar>
+      <ProfileAvatar
+        userId={comment.authorId}
+        username={comment.authorName}
+        avatar={comment.authorAvatar}
+      />
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex min-h-7 items-center justify-between gap-3">
           {comment.authorName && (
@@ -573,18 +575,20 @@ function PostDialogComment({
               {comment.authorName}
             </p>
           )}
-          {postId && comment.isAuthor && !isEditing && (
+          {postId && (comment.isAuthor || comment.canDelete) && !isEditing && (
             <ButtonGroup>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon-xs"
-                aria-label="Edytuj komentarz"
-                disabled={isPending || isConfirmingDelete}
-                onClick={onBeginEdit}
-              >
-                <SquarePenIcon />
-              </Button>
+              {comment.isAuthor && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-xs"
+                  aria-label="Edytuj komentarz"
+                  disabled={isPending || isConfirmingDelete}
+                  onClick={onBeginEdit}
+                >
+                  <SquarePenIcon />
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="outline"
@@ -677,4 +681,25 @@ function PostDialogComment({
       </div>
     </div>
   )
+}
+
+function ProfileAvatar({
+  userId,
+  username,
+  avatar,
+}: {
+  userId?: string
+  username?: string
+  avatar?: string
+}) {
+  const content = (
+    <Avatar>
+      <AvatarImage src={avatar} alt={username} />
+      <AvatarFallback>
+        {username?.substring(0, 2).toUpperCase() ?? "?"}
+      </AvatarFallback>
+    </Avatar>
+  )
+
+  return userId ? <Link href={`/profile/${userId}`}>{content}</Link> : content
 }
