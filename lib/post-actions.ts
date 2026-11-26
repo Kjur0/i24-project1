@@ -216,9 +216,11 @@ export async function deletePost(postId: string): Promise<postActionResult> {
     return { success: false, error: "Nie znaleziono wpisu." }
   }
 
+  const isModerator =
+    currentUser.role === "admin" || currentUser.role === "moderator"
   const result = await posts.deleteOne({
     _id: new ObjectId(postId),
-    author: new ObjectId(currentUser.id),
+    ...(isModerator ? {} : { author: new ObjectId(currentUser.id) }),
   })
 
   if (result.deletedCount === 0) {
@@ -251,35 +253,38 @@ export async function deleteComment(
     return { success: false, error: "Nie znaleziono komentarza." }
   }
 
+  const postObjectId = new ObjectId(postId)
+  const post = await posts.findOne(
+    { _id: postObjectId },
+    { projection: { comments: 1 } }
+  )
+  const comments = post?.comments
+  const comment = comments?.[commentIndex]
+
+  if (!comments || !comment) {
+    return { success: false, error: "Nie znaleziono komentarza." }
+  }
+
+  const isModerator =
+    currentUser.role === "admin" || currentUser.role === "moderator"
+  if (!isModerator && !comment.author.equals(new ObjectId(currentUser.id))) {
+    return {
+      success: false,
+      error: "Nie znaleziono komentarza lub nie masz uprawnień, aby go usunąć.",
+    }
+  }
+
   const result = await posts.updateOne(
+    { _id: postObjectId, comments },
     {
-      _id: new ObjectId(postId),
-      [`comments.${commentIndex}.author`]: new ObjectId(currentUser.id),
-    },
-    [
-      {
-        $set: {
-          comments: {
-            $concatArrays: [
-              { $slice: ["$comments", commentIndex] },
-              {
-                $slice: [
-                  "$comments",
-                  commentIndex + 1,
-                  { $subtract: [{ $size: "$comments" }, commentIndex + 1] },
-                ],
-              },
-            ],
-          },
-        },
-      },
-    ]
+      $set: { comments: comments.filter((_, index) => index !== commentIndex) },
+    }
   )
 
   if (result.matchedCount === 0) {
     return {
       success: false,
-      error: "Nie znaleziono komentarza lub nie masz uprawnień, aby go usunąć.",
+      error: "Komentarze uległy zmianie. Odśwież stronę i spróbuj ponownie.",
     }
   }
 

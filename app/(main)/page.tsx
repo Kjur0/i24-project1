@@ -90,6 +90,7 @@ export default async function Page({ searchParams }: PageProps) {
                   post={post}
                   postId={postId}
                   currentUserId={currentUser?.id}
+                  currentUserRole={currentUser?.role}
                 />
                 {index < pagePosts.length - 1 && <ItemSeparator />}
               </Fragment>
