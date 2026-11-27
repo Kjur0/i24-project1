@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this project, please cite it as below."
+title: "webmaster.rip"
+type: software
+authors:
+  - name: "Kjur0"
+repository-code: "https://github.com/Kjur0/i24-project1"
+version: "0.0.1"
