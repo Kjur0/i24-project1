@@ -142,9 +142,10 @@ version of each rule, so avoid duplicate rules targeting `main`.
 ## Security and automation settings
 
 The repository's pull-request creation cap is enabled at **two open PRs** and
-does not count drafts. This cap applies to contributors without write access.
-The selected exemption after one merged PR still needs verification in the
-repository settings; the REST API does not expose that exemption.
+does not count drafts. It applies to contributors without write access and
+exempts contributors after **one merged PR**. The exemption was verified in
+repository settings; the REST API exposes the cap and draft setting but not
+this exemption.
 
 Verified repository settings include Dependabot security updates, secret
 scanning, push protection, and private vulnerability reporting. Scanning for
