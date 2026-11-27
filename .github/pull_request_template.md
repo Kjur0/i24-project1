@@ -1,10 +1,10 @@
-## Linked issues
-
-<!-- Add one line per linked issue using exactly `- [ ] #123` and nothing after the issue number. -->
-
 ## Summary
 
 <!-- Describe the change and its scope. -->
+
+## Progress checklist
+
+- [ ] ...
 
 ## Validation
 
@@ -16,4 +16,8 @@
 - [ ] I updated directly related documentation.
 - [ ] I tested the change or explained why testing was not applicable.
 
-Use `Closes #<number>` only when this PR fully completes that issue. For partial work, use `Part of #<number>` instead. Issue lifecycle belongs in GitHub's planning-status preview, not status labels.
+## Issue closure
+
+<!-- Add `Closes #123` only for issues fully resolved by this PR. Do not repeat parent/related links already shown in GitHub's Development relationships. -->
+
+Issue lifecycle belongs in GitHub's planning-status preview, not status labels.

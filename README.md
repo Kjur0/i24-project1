@@ -136,6 +136,9 @@ MongoDB configuration and network access.
 - [Accessibility](./ACCESSIBILITY.md)
 - [Security policy](./SECURITY.md)
 - [Support](./SUPPORT.md)
+- [GitHub governance and maintainer settings](./docs/maintainers/github-governance.md)
+- [Shared agent instructions](./AGENTS.md)
+- [Copilot GitHub workflow](./.github/copilot-instructions.md)
 
 ## License
 

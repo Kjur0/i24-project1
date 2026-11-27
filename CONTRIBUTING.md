@@ -9,6 +9,9 @@ focused, and safe for users and maintainers.
   work.
 - For a large change, open or comment on an issue first so the intended scope is
   clear.
+- Choose the appropriate issue type (**Bug**, **Feature**, or **Task**) and set
+  the native **Priority** and **Effort** fields. Assign active work and use
+  topic labels only; do not use labels for status, priority, or effort.
 - Do not publish credentials, personal data, OTP codes, certificates, or private
   keys in issues, pull requests, logs, or commits.
 
@@ -30,29 +33,62 @@ or browser authentication, describe how you tested it and what services or
 environment values were needed. Keep development OTP values out of published
 logs and screenshots.
 
-## Changes and pull requests
+## GitHub flow and pull requests
 
-- Create a topic branch from `main`; avoid unrelated changes in the same pull
-  request.
+Follow [GitHub flow](https://docs.github.com/get-started/using-github/github-flow):
+
+1. For substantial work, agree on scope in an issue before implementation.
+2. Create a short-lived topic branch from `main`; keep unrelated work on
+   separate branches.
+3. Make focused changes, commit and push them regularly, and keep each commit
+   understandable on its own.
+4. Open a pull request with a concise summary, progress checklist, and
+   validation results. Use a draft pull request for early feedback while work
+   is ongoing; mark it ready when the pushed changes are reviewable.
+5. Link related issues through GitHub's **Development** section or use a
+   closing keyword such as `Closes #123` when the pull request fully resolves
+   that issue. Do not repeat those relationships in a checklist.
+6. Respond to review feedback, keep the branch current, and merge only after
+   the required reviews and checks pass. Delete the branch after merge when it
+   is no longer needed.
+
 - Use a clear [Conventional Commit](https://www.conventionalcommits.org/)
   subject, for example `docs: explain local HTTPS setup` or
   `fix: validate OTP expiry`.
+- Make focused commits as work progresses. Copilot-authored commits must
+  include this trailer:
+
+  ```text
+  Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
+  ```
+
 - Update documentation when behavior or setup changes.
 - Preserve existing formatting and component patterns.
-- Include a concise description, the related issue, and test results in the
-  pull request.
-- Use a closing keyword such as `Fixes #123` when the pull request fully
-  resolves an issue. Do not use a closing keyword for partial work.
-- Keep the pull request in draft until it is ready for maintainer review.
+- Keep issue descriptions focused on scope and acceptance criteria. Use native
+  parent/sub-issue and pull request Development links instead of duplicating
+  those relationships in descriptions or checklists.
+- Include a concise change summary, progress checklist, and test results in
+  the pull request. Use `Closes #123` only when the pull request fully resolves
+  that issue; do not repeat other relationships already shown by GitHub.
 
 ## Review and project status
 
-Use GitHub's planning-status preview for work status: Backlog, Todo, In
-progress, and In review. Do not create labels to represent those statuses.
-Labels are for topic/category triage.
+Use GitHub's issue-status preview for open work: **Backlog**, **Todo**, **In
+progress**, and **In review**. GitHub automatically moves an issue to **Todo**
+when a person is assigned, to **In progress** when a draft pull request is
+linked, and to **In review** when a linked pull request is ready for review.
+Confirm the native issue/PR relationship before changing status manually. Do
+not create labels to represent statuses; labels are for topic/category triage.
 
-Please respond to review feedback and keep the issue checklist and pull request
-description in sync as scope changes.
+Respond to review feedback and keep issue scope and PR progress accurate as
+work changes. Add concise progress comments when scope or review readiness
+materially changes. Copilot alone performs Git and GitHub operations in this
+repository; see [the Copilot instructions](./.github/copilot-instructions.md).
+
+For the distinction between native issue linking, closing keywords, and
+status automation, see GitHub's
+[issue-linking documentation](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue)
+and [issue-status documentation](https://docs.github.com/en/enterprise-cloud@latest/issues/tracking-your-work-with-issues/learning-about-issues/about-issue-statuses).
 
 ## License
 
