@@ -58,6 +58,13 @@ Contributors may open a pull request for an unrelated improvement without
 creating an issue first. For tracked work, use the issue as the source of
 truth for scope and acceptance criteria.
 
+Every contribution must be visible in a draft pull request while work is in
+progress. Open one as soon as the work branch has its first commit, including
+for maintainer-led work. The title, summary, and native relationship should
+make the issue being worked on clear; for independent work, say that no issue
+applies. Keep the pull request in draft until it is complete and ready for
+review.
+
 Use a closing keyword such as `Closes #123` when a pull request fully resolves
 an issue. Do not use a closing keyword for partial work. Maintainers manage
 native Development relationships for related or partial work and ensure the
@@ -71,6 +78,8 @@ reserved for its assignee unless maintainers invite collaboration.
 
 Changes are merged through pull requests to `main`, subject to the active
 repository review and required-check rules. Only maintainers merge changes.
+Maintainers may close a draft when a proposed contribution is not wanted or is
+out of scope, and should explain the decision.
 
 ## Maintainer responsibilities
 

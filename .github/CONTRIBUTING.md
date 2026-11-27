@@ -7,11 +7,17 @@ respectful, focused, and safe for users and maintainers.
 
 - Check for an existing issue before starting substantial work. Agree on the
   scope in an issue when the change is related to tracked work.
+- Every contribution must be visible in a draft pull request while work is in
+  progress. Open it as soon as the work branch has its first commit; this
+  applies to maintainer-led work as well as outside contributions.
 - Use the issue form that best matches the report. Maintainers classify issues
   and manage their labels, issue types, priority, effort, assignees,
   relationships, and development branches. Contributors do not need to set
   those fields or apply labels.
 - You do not need to create an issue for an unrelated pull request.
+- Make the work being done clear in the draft pull request. Link the issue
+  when the change is issue-scoped; for independent work, say that it is
+  unrelated to an issue.
 - Issues and pull requests with an assignee are reserved for that person.
   Do not begin work on them unless a maintainer invites you to collaborate.
 - Do not publish credentials, personal data, OTP codes, certificates, or
@@ -25,7 +31,7 @@ responsibilities, see [Project governance](./GOVERNANCE.md).
 Follow the setup instructions in the [README](../README.md). The project uses
 Node.js `26.11.1` or a compatible later 26.x release and pnpm `12.21.0`.
 
-Before opening a pull request, run:
+Before marking a code-changing pull request ready for review, run:
 
 ```sh
 pnpm lint
@@ -33,11 +39,14 @@ pnpm typecheck
 pnpm format
 ```
 
-`pnpm format` writes formatting changes to TypeScript and TSX files. There is
-not currently an automated test script. If a change requires MongoDB or
-browser authentication, describe how you tested it and what services or
-environment values were needed. Keep development OTP values out of published
-logs and screenshots.
+`pnpm format` writes formatting changes to TypeScript and TSX files. For
+documentation-only changes, application linting and typechecking are not
+applicable; check formatting for the changed documentation instead. Do not
+hold intermediate draft work for checks. Run the relevant checks before
+marking the PR ready and after significant changes. There is not currently an
+automated test script. If a change requires MongoDB or browser authentication,
+describe how you tested it and what services or environment values were
+needed. Keep development OTP values out of published logs and screenshots.
 
 For UI changes, use the [accessibility guidance for contributors](./ACCESSIBILITY.md)
 as a review checklist.
@@ -46,19 +55,28 @@ as a review checklist.
 
 Follow [GitHub flow](https://docs.github.com/get-started/using-github/github-flow):
 
-1. For a change related to an issue, confirm the intended scope before
-   implementation. No issue is required for unrelated work.
+1. For issue-related work, confirm the scope before implementation and use the
+   issue as the source of truth for acceptance criteria. No issue is required
+   for independent work.
 2. Create a short-lived topic branch from `main`; keep unrelated work on
    separate branches.
-3. Make focused changes and commits, and update the branch regularly.
-4. Open a pull request with a concise summary and exact validation results.
-   Use a draft while work is ongoing; mark it ready when it is reviewable.
+3. Make the first focused commit, then open a draft pull request promptly.
+   Keep it in draft while implementation is in progress, and update it as the
+   work changes.
+4. Make the pull request title and summary identify the work. Link its issue
+   through GitHub's native Development relationship, or state that the work is
+   independent when no issue applies.
 5. If the pull request fully resolves an issue, include a closing keyword such
    as `Closes #123`. For partial or related work, do not claim that the issue
    will close; maintainers can create the appropriate native Development
    relationship. Do not duplicate issue relationships in checkbox lists.
-6. Respond to review feedback and keep the branch current. Maintainers manage
+6. Run the relevant checks before marking the pull request ready for review.
+   Respond to review feedback and keep the branch current. Maintainers manage
    PR labels, assignees, reviewers, issue relationships, and merging.
+
+Maintainers may close a draft pull request when the proposed contribution is
+not wanted or is out of scope. They should explain the decision; do not
+continue the work unless the scope is agreed again.
 
 Use a clear
 [Conventional Commit](https://www.conventionalcommits.org/) subject, for

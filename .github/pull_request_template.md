@@ -1,6 +1,6 @@
 ## Summary
 
-<!-- Explain what changed and why. Keep the linked issue as the source of truth; do not copy its full description. -->
+<!-- Explain what changed and why. For issue-scoped work, the issue is the source of truth; link it natively and do not copy its full description. If independent, say that no issue applies. -->
 
 ## Progress checklist
 
@@ -8,7 +8,7 @@
 
 ## Validation
 
-<!-- List each exact command and its result. If validation was not applicable or was not run, explain why. -->
+<!-- Before marking ready, list each applicable command and its result. For documentation-only changes, explain why application checks do not apply. -->
 
 ## Author checklist
 
