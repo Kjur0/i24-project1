@@ -67,6 +67,15 @@ changes. Do not merge on the owner's behalf unless explicitly authorized.
   automatically runs staged-file code and Markdown linting and formatting,
   then full lint, typechecking, and `pnpm format:check`; do not bypass these
   checks.
+- For substantial AI-assisted PRs, leave final review and sign-off to the
+  human contributor. Do not mark the PR ready until the human has reviewed
+  the final diff and made the final signed-off commit described in
+  [CONTRIBUTING.md](./CONTRIBUTING.md). Commit completed work locally, then
+  stop and wait for review without pushing. The human may amend the latest
+  unpushed agent commit or add a signed empty commit as the final commit.
+  Never perform that amendment, add a human trailer, create the empty
+  sign-off commit, push while sign-off is pending, or add a commit after
+  human sign-off. Do not amend an agent commit that has already been pushed.
 - Follow the digital-signature, sign-off, and attribution requirements in
   [CONTRIBUTING.md](./CONTRIBUTING.md). Do not duplicate literal trailer
   values here.

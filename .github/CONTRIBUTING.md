@@ -99,8 +99,14 @@ Follow [GitHub flow](https://docs.github.com/get-started/using-github/github-flo
    that the issue will close. Do not duplicate issue relationships in
    checkbox lists.
 7. Run the relevant checks before marking the pull request ready for review.
-   Respond to review feedback and keep the branch current. Maintainers manage
-   PR labels, assignees, reviewers, issue relationships, and merging.
+   For substantial AI-assisted work, the human contributor must review the
+   final diff and provide explicit sign-off before the PR leaves draft. The
+   agent should commit the completed work locally, then stop and wait for the
+   human's review before pushing. The human may amend the latest unpushed
+   agent commit with the appropriate trailers, or add a signed empty sign-off
+   commit as the final commit in the PR. Respond to review feedback and keep
+   the branch current. Maintainers manage PR labels, assignees, reviewers,
+   issue relationships, and merging.
 
 Maintainers may close a draft pull request when the proposed contribution is
 not wanted or is out of scope. They should explain the decision; do not
@@ -139,6 +145,42 @@ content with a `Co-authored-by` trailer using its verified attribution
 identity. Do not invent an agent email address. Add `Tested-by` only for
 testing actually performed, and `Reviewed-by` only for a human who reviewed
 the commit.
+
+For substantial AI-assisted PRs, the human must review the final diff and
+provide explicit sign-off before the PR is marked ready. The agent should
+commit the completed, validated work locally and wait for that review without
+pushing. The human then chooses one of these sign-off methods:
+
+1. **Amend the latest unpushed agent commit.** The human reviews the diff,
+   stages any intended changes, and amends the latest commit using their own
+   signing key and `Signed-off-by` trailer, while preserving the verified
+   agent `Co-authored-by` trailer. For example:
+
+   ```sh
+   git add <reviewed-files>
+   git commit --amend --no-edit -S -s
+   ```
+
+This amended commit is the final sign-off commit; no separate empty
+sign-off commit is needed. The human can then push the branch normally. 2. **Add an empty sign-off commit.** If the human does not want to amend the
+latest commit, an intentionally empty signed-off commit is a valid way to
+record their final review and responsibility:
+
+```sh
+git commit --allow-empty -S -s -m "chore: sign off on AI-assisted work"
+```
+
+The human can then push the branch; this empty sign-off commit must be the
+final commit in the PR.
+
+Only the human may amend a commit or create the empty sign-off commit, using
+their own identity and signing key. Do not amend an agent commit that has
+already been pushed; use the separate empty sign-off commit instead. In
+either method, the resulting human-signed commit must be the final commit in
+the PR. If more changes are needed after sign-off, make and validate them
+first, then have the human review and sign off again. An agent must not add a
+human trailer, perform the amendment, create the empty sign-off commit, push
+while sign-off is pending, or add any commit after human sign-off.
 
 The project's signing-key policy is:
 
