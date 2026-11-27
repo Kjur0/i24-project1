@@ -1,0 +1,46 @@
+name: Feature request
+description: Propose a new feature or improvement.
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues first. Describe the user need rather than
+        prescribing an implementation.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What need or problem would this proposal address?
+      description: Describe who would benefit and in what situation.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Desired outcome
+      description: Describe the change from the user's perspective.
+    validations:
+      required: true
+  - type: textarea
+    id: success
+    attributes:
+      label: Success criteria
+      description: List concrete, verifiable outcomes. Do not use links to other issues as checklist tasks.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context (optional)
+      description: Do not include secrets or personal data.
+    validations:
+      required: false
