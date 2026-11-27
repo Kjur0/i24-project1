@@ -1,11 +1,16 @@
-# Support
+# Pomoc
 
-webmaster.rip is an early prototype maintained on a best-effort basis.
+webmaster.rip to wczesny prototyp rozwijany w miarę dostępnych możliwości.
 
-- For bugs, feature ideas, or accessibility barriers, open an [issue in the repository](https://github.com/Kjur0/i24-project1/issues/new).
-- For security vulnerabilities, follow [SECURITY.md](./SECURITY.md); do not post exploit details publicly.
-- For setup, first check the [README](./README.md) and the existing issues.
+- Błędy, pomysły na funkcje i bariery dostępności zgłaszaj, otwierając
+  [zgłoszenie w repozytorium](https://github.com/Kjur0/i24-project1/issues/new).
+- Luki w zabezpieczeniach zgłaszaj zgodnie z zasadami opisanymi w
+  [polityce bezpieczeństwa](./SECURITY.md). Nie publikuj szczegółów umożliwiających
+  wykorzystanie luki.
+- Informacje o konfiguracji znajdziesz w pliku [README](./README.md) i
+  istniejących zgłoszeniach.
 
-Please include enough context to understand the problem, but remove credentials,
-private keys, personal data, and OTP codes before sharing logs or screenshots.
-There is no guaranteed response time or general user-support service.
+Opisz problem na tyle dokładnie, aby można go było zrozumieć. Przed udostępnieniem
+logów lub zrzutów ekranu usuń z nich dane logowania, klucze prywatne, dane
+osobowe i kody jednorazowe. Nie gwarantujemy czasu odpowiedzi ani nie prowadzimy
+ogólnej obsługi użytkowników.

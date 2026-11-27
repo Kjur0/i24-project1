@@ -1,13 +1,18 @@
 # webmaster.rip
 
-webmaster.rip is a Polish-language community feedback site for the website of
-Technical Secondary School No. 1 (TM1). This repository contains its Next.js
-application.
+## Opis projektu
 
-The project is an early prototype. The current app supports posts and comments,
-email one-time-code sign-in, passkey authentication, user profiles and settings,
-and administrator/moderator tools. The 1-to-5 rating in the original project
-brief is not implemented in the current app.
+webmaster.rip to polskojęzyczny serwis społecznościowy do dzielenia się opiniami
+o stronie internetowej Technikum nr 1 (TM1). To repozytorium zawiera aplikację
+opartą na Next.js.
+
+## Aktualny stan
+
+Projekt jest wczesnym prototypem. Obecna wersja obsługuje wpisy i komentarze,
+logowanie za pomocą jednorazowego kodu powiązanego z adresem e-mail, klucze
+dostępu, profile i ustawienia użytkowników oraz narzędzia administratorów i
+moderatorów. Ocenianie strony w skali od 1 do 5, przewidziane w pierwotnym
+opisie projektu, nie zostało zaimplementowane.
 
 ## Technology
 

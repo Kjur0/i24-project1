@@ -1,16 +1,17 @@
-# Accessibility
+# Dostępność
 
-Accessibility is an ongoing project requirement. We aim to make the application
-usable with keyboards, assistive technology, zoom, and a range of user needs.
-The current application has not had a formal accessibility audit, so this
-document is not a claim of conformance to WCAG.
+Dostępność jest stałym wymaganiem projektu. Dążymy do tego, aby z aplikacji
+można było korzystać za pomocą klawiatury, technologii asystujących i
+powiększenia ekranu oraz aby odpowiadała na różne potrzeby użytkowników.
+Aplikacja nie przeszła jeszcze formalnego audytu dostępności, dlatego ten opis
+nie stanowi deklaracji zgodności z WCAG.
 
-## Reporting an issue
+## Zgłaszanie problemu
 
-Open an [issue in the repository](https://github.com/Kjur0/i24-project1/issues/new).
-Describe the affected page and interaction, the assistive technology or input
-method involved when known, and the barrier encountered. Avoid including
-personal or sensitive information.
+Otwórz [zgłoszenie w repozytorium](https://github.com/Kjur0/i24-project1/issues/new).
+Opisz stronę i działanie, których dotyczy problem, napotkaną barierę oraz — jeśli
+to możliwe — używaną technologię asystującą lub metodę obsługi. Nie podawaj
+danych osobowych ani innych informacji poufnych.
 
 ## Contributor checklist
 
