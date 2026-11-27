@@ -125,9 +125,8 @@ one-time codes to the server log rather than delivering them by email.
 | `pnpm start`                   | Serve a previously built production app.            |
 | `pnpm exec prettier --check .` | Check formatting with Prettier.                     |
 
-There is no automated test script yet. Lint and typecheck do not need a
-reachable database; running the app requires MongoDB configuration and network
-access.
+Lint and typecheck do not need a reachable database; running the app requires
+MongoDB configuration and network access.
 
 ## Project documentation
 
