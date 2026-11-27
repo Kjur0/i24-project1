@@ -45,7 +45,7 @@ This includes code and Markdown linting plus Prettier formatting checks for
 supported files, including Markdown and YAML. Do not bypass these checks.
 
 When fixing lint issues locally, prefer `pnpm lint:fix`; CI uses
-`pnpm lint:code` and `pnpm lint:markdown` to check without changing files.
+`pnpm lint:code` and `pnpm lint:docs` to check without changing files.
 `pnpm format` writes Prettier formatting changes to code and documentation
 files. CI uses `pnpm format:check` to check supported files without modifying
 them.
