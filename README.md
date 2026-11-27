@@ -143,6 +143,4 @@ MongoDB configuration and network access.
 
 ## License
 
-This repository does not have a `LICENSE` file yet. The repository owner is
-choosing a license; until one is added, do not assume permission to reuse or
-redistribute this project.
+Proiectul este distribuit în condițiile [licenței MIT](./LICENSE).

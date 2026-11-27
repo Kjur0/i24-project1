@@ -73,22 +73,59 @@ The active `MASTER` ruleset targets the default branch (`main`). It currently:
 - Runs CodeQL with a high-or-higher security-alert threshold and an errors
   code-scanning threshold; code-quality findings use a warning threshold.
 - Has zero required approving reviews, does not dismiss stale approvals, has no
-  required CI status check, and has no bypass actors.
+  required status checks, and has no bypass actors.
+
+The supplied screenshots show a more restrictive proposed configuration, but
+the current active ruleset does not yet contain those changes. The screenshots
+show one approval, dismissal of stale approvals, CODEOWNERS review, approval
+of the latest reviewable push, conversation resolution, and an additional
+approval for unattributed Copilot PRs. They also show required
+`lint-and-typecheck` and `CodeQL` checks, an up-to-date branch requirement,
+and a repository-admin bypass restricted to pull requests.
+
+For that proposed setup:
+
+- **Repository-admin bypass, pull requests only** keeps changes on the PR
+  path and in the audit trail while allowing an administrator to explicitly
+  bypass review/check rules when necessary. **Always** would also allow direct
+  pushes that bypass the PR gate.
+- **One approval, stale-review dismissal, CODEOWNERS, and latest-push
+  approval** provide meaningful review for external PRs. The sole maintainer
+  cannot approve their own PR; a PR-only admin bypass is the practical escape
+  hatch unless a second eligible reviewer is added.
+- **`lint-and-typecheck`** runs the repository's ESLint and TypeScript checks.
+  The CodeQL workflow's job is named **Analyze JavaScript and TypeScript**;
+  requiring that job ensures the analysis workflow completes. The separate
+  **CodeQL** security result is governed by the code-scanning thresholds.
+  Requiring both the workflow job and the result gate protects against both
+  failed analysis and threshold-exceeding findings.
+- The **`github-advanced-security`** check observed on some PRs comes from a
+  dynamic Copilot code-scanning workflow, not the repository's stable CI or
+  CodeQL workflow; do not make that transient check a required status.
+  Dependabot is dependency-update automation, not a required baseline check.
+- **Require branches to be up to date** means the PR must include current
+  `main` and its checks must pass against that updated code. **Do not require
+  status checks on creation** allows a repository or branch to be created
+  even if a required check would otherwise prohibit it; it does not waive
+  required checks at merge.
+- The CodeQL **High or higher** security threshold blocks merging for findings
+  at those severities; the **Errors** alert threshold blocks scanner errors.
+  **Warnings and higher** code-quality severity blocks unresolved warnings and
+  errors. Code coverage and automatic Copilot review are disabled in the
+  screenshots.
 
 Recommended ruleset policy:
 
-1. Keep one active ruleset for `main`; add the `lint-and-typecheck` status
-   check after verifying its exact name in a current pull request.
-2. Require one independent approval and dismiss stale approvals when a second
-   eligible reviewer is available. `@Kjur0` is the current CODEOWNER, so test
-   whether the existing code-owner review rule prevents the sole owner from
-   merging their own PR. If it does, add another reviewer or temporarily
-   remove that requirement; avoid a broad bypass.
+1. Keep one active ruleset for `main`; use the proposed PR-only administrator
+   bypass and review requirements if they match the owner's intended workflow.
+2. Require `lint-and-typecheck`, the **Analyze JavaScript and TypeScript**
+   workflow result, and CodeQL security results at the chosen threshold.
+   Avoid requiring transient Copilot checks or Dependabot as baseline checks.
 3. Keep pull-request review, conversation resolution, signed commits, branch
    deletion protection, and force-push protection enabled.
-4. Consider a separate `release-tags` ruleset for `v*` tags only when this
-   project begins publishing versioned releases. No additional feature-branch
-   ruleset is needed for the current GitHub Flow.
+4. No release-tag ruleset is currently needed if the project will not publish
+   releases. No additional feature-branch ruleset is needed for this GitHub
+   Flow.
 5. Do not add a push ruleset for this public repository; use secret scanning
    and push protection instead.
 
@@ -102,8 +139,8 @@ scanning, push protection, and private vulnerability reporting. Scanning for
 non-provider secret patterns and secret validity checks are disabled.
 Dependabot weekly version updates are configured in `.github/dependabot.yml`.
 CI and CodeQL workflows are defined under `.github/workflows/`; workflow
-permissions should remain least-privilege. The repository currently allows
-all GitHub Actions and does not require actions to be pinned to full commit
+permissions should remain least-privilege. All GitHub Actions are currently
+allowed, but the repository requires actions to be pinned to full commit
 SHAs.
 
 Review security alerts and Dependabot pull requests promptly. Do not put
@@ -123,14 +160,10 @@ accessibility guidance under `docs/`:
 - `docs/ACCESSIBILITY.md`, issue forms in `.github/ISSUE_TEMPLATE/`, and
   `.github/pull_request_template.md`.
 
-Keep `README.md`, `CITATION.cff`, the eventual `LICENSE`, ecosystem manifests,
-and root `AGENTS.md` in the repository root. GitHub's citation feature looks
-for `CITATION.cff` there, and coding agents discover shared instructions from
-the root `AGENTS.md`.
-
-The repository does not yet have a `LICENSE`. The owner must select and add one
-before the project can claim a license; contributors and agents must not choose
-one on the owner's behalf.
+Keep `README.md`, `CITATION.cff`, `LICENSE`, ecosystem manifests, and root
+`AGENTS.md` in the repository root. GitHub's citation and license detection
+look for these files there, and coding agents discover shared instructions
+from the root `AGENTS.md`.
 
 ## Agent instruction placement
 
@@ -154,6 +187,9 @@ one on the owner's behalf.
 - [CITATION.cff placement](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files)
 - [Interaction limits](https://docs.github.com/en/communities/moderating-comments-and-conversations/limiting-interactions-in-your-repository)
 - [Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+- [Creating repository rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository)
+- [Code scanning merge protection](https://docs.github.com/en/code-security/concepts/code-scanning/merge-protection)
+- [Code quality thresholds](https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-pr-thresholds)
 - [Microsoft Learn: GH-900 GitHub Foundations study guide](https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/gh-900)
 
 The GH-900 outline covers GitHub flow, issue and pull request collaboration,
