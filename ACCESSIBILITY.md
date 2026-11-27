@@ -7,7 +7,7 @@ document is not a claim of conformance to WCAG.
 
 ## Reporting an issue
 
-Use the [accessibility issue form](https://github.com/Kjur0/i24-project1/issues/new?template=accessibility.yml).
+Open an [issue in the repository](https://github.com/Kjur0/i24-project1/issues/new).
 Describe the affected page and interaction, the assistive technology or input
 method involved when known, and the barrier encountered. Avoid including
 personal or sensitive information.
