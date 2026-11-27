@@ -30,7 +30,7 @@ jobs:
         run: |
           if [[ "$GITHUB_EVENT_NAME" != "pull_request" ]]; then
             echo "code=true" >> "$GITHUB_OUTPUT"
-          elif git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -Eq '(^app/|^components/|^hooks/|^lib/|^types/|(^|/)[^/]+\.(cjs|js|jsx|mjs|ts|tsx)$|^(eslint\.config\.mjs|next\.config\.ts|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|postcss\.config\.mjs|tsconfig\.json)$|^\.github/workflows/ci\.yml$)'; then
+          elif git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -Eq '(^app/|^components/|^hooks/|^lib/|^types/|(^|/)[^/]+\.(cjs|js|jsx|mjs|ts|tsx)$|^(eslint\.config\.mjs|next\.config\.ts|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|postcss\.config\.mjs|tsconfig\.json)$|^\.github/workflows/code-quality\.yml$)'; then
             echo "code=true" >> "$GITHUB_OUTPUT"
           else
             echo "code=false" >> "$GITHUB_OUTPUT"
@@ -54,4 +54,4 @@ jobs:
       - name: Lint
         run: pnpm lint
       - name: TypeScript typecheck
-        run: pnpm exec tsc --noEmit
+        run: pnpm typecheck
