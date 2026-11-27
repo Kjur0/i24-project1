@@ -11,8 +11,7 @@ opartą na Next.js.
 Projekt jest wczesnym prototypem. Obecna wersja obsługuje wpisy i komentarze,
 logowanie za pomocą jednorazowego kodu powiązanego z adresem e-mail, klucze
 dostępu, profile i ustawienia użytkowników oraz narzędzia administratorów i
-moderatorów. Ocenianie strony w skali od 1 do 5, przewidziane w pierwotnym
-opisie projektu, nie zostało zaimplementowane.
+moderatorów.
 
 ## Technology
 

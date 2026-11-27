@@ -64,10 +64,3 @@ osobnej kolekcji.
 | `token`     | `string`   | Skrót SHA-256 tokenu sesji; jawny token znajduje się w ciasteczku HTTP-only. |
 | `createdAt` | `Date`     | Data utworzenia sesji.                                                       |
 | `expiresAt` | `Date`     | Data wygaśnięcia sesji.                                                      |
-
-## Różnice względem pierwotnego modelu
-
-Obecny model nie zawiera pól `idp` ani `currentRating`. Logowanie wykorzystuje
-adres e-mail z kodem jednorazowym lub klucz dostępu. Oceny strony nie są
-zapisywane w bazie. Komentarze są częścią dokumentu wpisu, a nie osobnymi,
-rekurencyjnymi dokumentami.

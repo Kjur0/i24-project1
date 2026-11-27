@@ -33,8 +33,6 @@ obecny stan, a nie funkcje planowane lub niezrealizowane.
 
 ## Ograniczenia i stan niezrealizowanych funkcji
 
-- W pierwotnym zadaniu przewidziano ocenę strony w skali od 1 do 5. Funkcja
-  oceniania nie została zaimplementowana.
 - Nie skonfigurowano dostawcy poczty. Jednorazowe kody są obecnie zapisywane
   w logach serwera na potrzeby developmentu; nie jest to bezpieczny sposób
   dostarczania kodów w produkcji.
