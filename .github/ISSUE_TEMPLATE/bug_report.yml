@@ -1,0 +1,60 @@
+name: Bug report
+description: Report a problem that can be reproduced in the application or repository.
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues before submitting. Do not include passwords,
+        private keys, OTP codes, or personal data.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: If known, provide the version, branch, or commit.
+    validations:
+      required: false
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and how it affects use of the application.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Provide the smallest set of steps that reproduces the problem.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, and relevant configuration without secrets.
+    validations:
+      required: false
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Accessibility context (optional)
+      description: If this is an accessibility issue, describe the input method or assistive technology. Do not share health information.
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional information (optional)
+      description: Add a screenshot or error message after removing confidential information.
+    validations:
+      required: false

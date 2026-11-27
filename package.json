@@ -4,25 +4,29 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https --hostname asus.jurkowski.net.pl",
+    "dev": "next dev --experimental-https --hostname localhost",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "lint": "eslint \"**/*.{js,jsx,ts,tsx,mjs,cjs}\" \"**/*.md\"",
+    "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx,mjs,cjs}\" \"**/*.md\"",
+    "lint:code": "eslint \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
+    "lint:docs": "eslint \"**/*.md\"",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs,md,yml,yaml,json}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs,md,yml,yaml,json}\"",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
-    "@hookform/resolvers": "^7.0.7",
+    "@hookform/resolvers": "^7.0.9",
     "@simplewebauthn/browser": "^14.0.0",
     "@simplewebauthn/server": "^14.1.0",
     "@tanstack/react-table": "^9.3.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
     "input-otp": "^1.5.0",
-    "lucide-react": "^1.75.0",
-    "mongodb": "^7.9.0",
+    "lucide-react": "^1.79.0",
+    "mongodb": "^7.9.1",
     "next": "16.4.6",
     "next-themes": "^0.4.6",
     "react": "19.3.1",
@@ -33,35 +37,40 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/markdown": "^9.0.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@shadcn/lint": "^0.2.5",
     "@tailwindcss/postcss": "^4.3.5",
-    "@types/node": "^26.6.6",
-    "@types/react": "^19.3.0",
+    "@types/node": "^26.6.7",
+    "@types/react": "^19.3.1",
     "@types/react-dom": "^19.3.0",
-    "@typescript-eslint/parser": "^8.73.0",
+    "@typescript-eslint/parser": "^8.74.0",
     "eslint": "^10.15.0",
     "eslint-config-next": "16.4.6",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.1",
+    "lint-staged": "^17.6.2",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.5",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
+    "**/*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",
       "prettier --write --ignore-unknown"
     ],
-    "**/!(*.js|*.jsx|*.ts|*.tsx)": "prettier --write --ignore-unknown"
+    "**/*.md": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
+    ],
+    "**/!(*.js|*.jsx|*.ts|*.tsx|*.mjs|*.cjs|*.md)": "prettier --write --ignore-unknown"
   },
   "packageManager": "pnpm@12.21.0",
   "engines": {
     "runtime": {
       "name": "node",
-      "version": "^26.13.1",
+      "version": "^26.11.1",
       "onFail": "download"
     }
   },

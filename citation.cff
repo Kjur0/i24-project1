@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: webmaster.rip
+message: >-
+  If you use this project, please cite it as below.
+type: software
+authors:
+  - orcid: "https://orcid.org/0009-0008-3686-8078"
+    email: krzysztof.jurkowski@tm1.edu.pl
+    given-names: Krzysztof
+    family-names: Jurkowski
+repository-code: "https://github.com/Kjur0/i24-project1"
+abstract: >-
+  A Polish-language social web app for discussing the Technikum nr 1 (TM1)
+  website, with posts, comments, user profiles, moderation tools, and WebAuthn
+  passkey authentication.
+keywords:
+  - react
+  - webauthn
+  - passkeys
+  - nextjs
+  - mongodb
+license: MIT

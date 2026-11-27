@@ -1,0 +1,33 @@
+name: Track a task
+description: Propose documentation, maintenance, or technical work.
+type: Task
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for planned work that is neither a bug nor a new feature.
+        Do not include secrets or personal data.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be accomplished, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Scope and acceptance criteria
+      description: List concrete steps or outcomes. Do not use links to other issues as checklist items.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints or additional context (optional)
+      description: Add information that would help estimate or complete the task.
+    validations:
+      required: false
