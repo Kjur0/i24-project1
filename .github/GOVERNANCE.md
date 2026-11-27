@@ -148,14 +148,21 @@ repository settings; the REST API exposes the cap and draft setting but not
 this exemption.
 
 Verified repository settings include Dependabot security updates, secret
-scanning, push protection, and private vulnerability reporting. Scanning for
-non-provider secret patterns and secret validity checks are disabled.
+scanning, push protection, and private vulnerability reporting. Secret
+validity checks are disabled. The owner selected enabling non-provider secret
+patterns, but the repository API did not apply that change; enable **Generic
+patterns** in the repository's **Settings → Security → Advanced Security →
+Secret Protection** before considering the setting complete.
+
 Dependabot weekly version updates are configured in `.github/dependabot.yml`.
-CI and CodeQL workflows are defined under `.github/workflows/`; workflow
-permissions should remain least-privilege. All GitHub Actions are currently
-allowed, and the repository does not require full-SHA pins. The workflows use
-major-version tags such as `@v4`, as preferred by the owner. Unlike commit
-SHAs, version tags are mutable and may point to updated action code over time.
+Routine minor and patch updates are grouped by ecosystem; major updates and
+security updates remain separate. CodeQL runs on review-ready pull requests,
+pushes to `main`, and manual dispatch, without a periodic schedule. CI and
+CodeQL workflows are defined under `.github/workflows/`; workflow permissions
+should remain least-privilege. All GitHub Actions are currently allowed, and
+the repository does not require full-SHA pins. The workflows use major-version
+tags such as `@v4`, as preferred by the owner. Unlike commit SHAs, version tags
+are mutable and may point to updated action code over time.
 
 Review security alerts and Dependabot pull requests promptly. Do not put
 credentials, private keys, certificates, OTP values, or sensitive personal
