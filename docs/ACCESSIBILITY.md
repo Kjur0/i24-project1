@@ -1,35 +1,46 @@
 # Dostępność
 
-Dostępność jest stałym wymaganiem projektu. Dążymy do tego, aby z aplikacji
-można było korzystać za pomocą klawiatury, technologii asystujących i
-powiększenia ekranu oraz aby odpowiadała na różne potrzeby użytkowników.
-Aplikacja nie przeszła jeszcze formalnego audytu dostępności, dlatego ten opis
-nie stanowi deklaracji zgodności z WCAG.
+Pracujemy nad tym, aby z webmaster.rip można było korzystać na różne sposoby:
+za pomocą klawiatury, czytnika ekranu, powiększenia i ustawień ułatwiających
+obsługę. Ten opis nie jest deklaracją zgodności z WCAG. Aplikacja nie przeszła
+formalnego audytu dostępności.
 
-## Zgłaszanie bariery lub prośby o zmianę
+## Zgłaszanie bariery lub propozycji
 
-Jeśli istniejące działanie jest niedostępne lub zepsute, użyj
-[formularza zgłoszenia błędu](https://github.com/Kjur0/i24-project1/issues/new?template=bug_report.yml).
-Opisz stronę i działanie, których dotyczy problem, napotkaną barierę oraz — jeśli
-to możliwe — używaną technologię asystującą lub metodę obsługi.
+Jeśli istniejące działanie jest niedostępne, nie działa zgodnie z oczekiwaniami
+albo uniemożliwia wykonanie zadania, zgłoś je przez
+[formularz błędu](https://github.com/Kjur0/i24-project1/issues/new?template=bug_report.yml).
 
-Aby zaproponować usprawnienie dostępności, użyj
+Jeśli chcesz zaproponować usprawnienie dostępności, którego nie dotyczy
+konkretny błąd, użyj
 [formularza prośby o poprawę dostępności](https://github.com/Kjur0/i24-project1/issues/new?template=accessibility_request.yml).
-Nie podawaj danych osobowych, informacji o stanie zdrowia ani innych informacji
-poufnych.
+Możesz zgłosić problem nawet wtedy, gdy nie znasz jego technicznej przyczyny
+ani odpowiedniego standardu.
 
-## Contributor checklist
+## Informacje, które pomogą w zgłoszeniu
 
-When changing UI:
+Jeśli możesz, opisz:
 
-- Make all actions available by keyboard and preserve a visible focus indicator.
-- Use semantic HTML, labels, headings, and accessible names for controls.
-- Keep text and interactive-state contrast legible.
-- Ensure dialogs and menus have an understandable focus and dismissal flow.
-- Respect reduced-motion preferences when adding animation.
-- Check the interface at browser zoom and with narrow viewports.
-- Write user-facing text in the application's existing language and preserve its
-  document language metadata.
+- stronę, funkcję lub czynność, której dotyczy problem;
+- kroki prowadzące do bariery;
+- co się dzieje i jaki rezultat byłby oczekiwany;
+- przeglądarkę oraz system operacyjny;
+- używaną metodę obsługi, na przykład klawiaturę, powiększenie lub czytnik
+  ekranu, a także jego nazwę i wersję, jeśli je znasz;
+- wpływ problemu na możliwość korzystania z aplikacji.
 
-If a change introduces a known limitation, document it and create an issue to
-track follow-up work.
+Nie musisz podawać diagnozy ani ujawniać informacji o stanie zdrowia. Nie
+zamieszczaj haseł, kodów jednorazowych, tokenów, danych osobowych ani innych
+informacji poufnych. Zrzuty ekranu i logi przed publikacją sprawdź pod kątem
+takich danych. Publiczne zgłoszenia są widoczne dla wszystkich.
+
+Podejrzenia dotyczące luk w zabezpieczeniach zgłaszaj wyłącznie zgodnie z
+[polityką bezpieczeństwa](https://github.com/Kjur0/i24-project1/security/policy),
+a nie w publicznym zgłoszeniu.
+
+## Co dzieje się po zgłoszeniu
+
+Maintainerzy sprawdzają zgłoszenia i określają ich zakres oraz sposób dalszej
+obsługi. Nie gwarantujemy czasu odpowiedzi ani terminu wprowadzenia zmiany.
+Informacje o tym, jak przygotować propozycję lub pull request, znajdują się w
+[wytycznych dla współtwórców](https://github.com/Kjur0/i24-project1/blob/main/.github/CONTRIBUTING.md).

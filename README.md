@@ -1,16 +1,14 @@
 # webmaster.rip
 
-## Opis projektu
+## Project overview
 
-webmaster.rip to polskojęzyczny serwis społecznościowy do dzielenia się opiniami
-o stronie internetowej Technikum nr 1 (TM1). To repozytorium zawiera aplikację
-opartą na Next.js.
+webmaster.rip is a Polish-language social site for sharing opinions about the
+Technikum nr 1 (TM1) website. This repository contains its Next.js application.
 
-## Funkcje
-
-Projekt jest ukończony. Aplikacja obsługuje wpisy i komentarze, logowanie za
-pomocą jednorazowego kodu powiązanego z adresem e-mail, klucze dostępu, profile
-i ustawienia użytkowników oraz narzędzia administratorów i moderatorów.
+The project is considered complete. It supports posts and comments, one-time
+email-linked sign-in codes, passkeys, user profiles and settings, and
+administrator and moderator tools. Email delivery is not configured; generated
+one-time codes are currently written to the server log.
 
 ## Technology
 
@@ -51,9 +49,9 @@ development certificate for HTTPS; your browser may ask you to trust it.
 
 ## Environment configuration
 
-The app reads server-side variables from `.env.local`. Do not commit `.env.local`
-or put secrets in variables prefixed with `NEXT_PUBLIC_`; those are exposed to
-the browser. No `NEXT_PUBLIC_` variables are currently required.
+The app reads server-side variables from `.env.local`. Do not commit
+`.env.local` or put secrets in variables prefixed with `NEXT_PUBLIC_`; those are
+exposed to the browser. No `NEXT_PUBLIC_` variables are currently required.
 
 | Variable     | Required                                         | Purpose                                                                                                |
 | ------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
@@ -109,24 +107,19 @@ An optional certificate authority can be supplied with
 `--experimental-https-ca`. These flags are for local development only. Use
 properly issued certificates in production.
 
-### Email and OTP delivery
-
-No email provider is configured. The application currently writes generated
-one-time codes to the server log rather than delivering them by email.
-
 ## Useful commands
 
-| Command                        | Description                                         |
-| ------------------------------ | --------------------------------------------------- |
-| `pnpm dev`                     | Start the HTTPS development server on `localhost`.  |
-| `pnpm lint`                    | Run ESLint.                                         |
-| `pnpm exec tsc --noEmit`       | Run the TypeScript compiler without emitting files. |
-| `pnpm build`                   | Create a production build.                          |
-| `pnpm start`                   | Serve a previously built production app.            |
-| `pnpm exec prettier --check .` | Check formatting with Prettier.                     |
+| Command          | Description                                                               |
+| ---------------- | ------------------------------------------------------------------------- |
+| `pnpm dev`       | Start the HTTPS development server on `localhost`.                        |
+| `pnpm lint`      | Run ESLint.                                                               |
+| `pnpm typecheck` | Run the TypeScript compiler without emitting files.                       |
+| `pnpm format`    | Format TypeScript and TSX files with Prettier; this command writes files. |
+| `pnpm build`     | Create a production build.                                                |
+| `pnpm start`     | Serve a previously built production app.                                  |
 
-Lint and typecheck do not need a reachable database; running the app requires
-MongoDB configuration and network access.
+Linting and typechecking do not need a reachable database; running the app
+requires MongoDB configuration and network access.
 
 ## Project documentation
 
@@ -137,10 +130,10 @@ MongoDB configuration and network access.
 - [Code of conduct](./.github/CODE_OF_CONDUCT.md)
 - [Security policy](./.github/SECURITY.md)
 - [Support](./.github/SUPPORT.md)
-- [GitHub governance and maintainer settings](./.github/GOVERNANCE.md)
+- [Project governance](./.github/GOVERNANCE.md)
 - [Shared agent instructions](./AGENTS.md)
 - [Copilot GitHub workflow](./.github/copilot-instructions.md)
 
 ## License
 
-Proiectul este distribuit în condițiile [licenței MIT](./LICENSE).
+The project is distributed under the terms of the [MIT License](./LICENSE).

@@ -13,6 +13,7 @@
 ## Author checklist
 
 - [ ] The changes stay within the agreed issue scope.
+- [ ] I reviewed and take responsibility for all changes, including AI-assisted changes.
 - [ ] Related documentation is updated, or is not applicable.
 - [ ] I checked the changes and shared logs for secrets, OTP codes, and personal data.
 
