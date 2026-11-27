@@ -153,8 +153,9 @@ non-provider secret patterns and secret validity checks are disabled.
 Dependabot weekly version updates are configured in `.github/dependabot.yml`.
 CI and CodeQL workflows are defined under `.github/workflows/`; workflow
 permissions should remain least-privilege. All GitHub Actions are currently
-allowed, but the repository requires actions to be pinned to full commit
-SHAs.
+allowed, and the repository does not require full-SHA pins. The workflows use
+major-version tags such as `@v4`, as preferred by the owner. Unlike commit
+SHAs, version tags are mutable and may point to updated action code over time.
 
 Review security alerts and Dependabot pull requests promptly. Do not put
 credentials, private keys, certificates, OTP values, or sensitive personal
