@@ -2,8 +2,11 @@
 
 Projekt webmaster.rip jest ukończony.
 
-- Błędy, pomysły na funkcje i bariery dostępności zgłaszaj, otwierając
-  [zgłoszenie w repozytorium](https://github.com/Kjur0/i24-project1/issues/new).
+- Błędy i pomysły na funkcje zgłaszaj przez odpowiedni
+  [formularz zgłoszenia](https://github.com/Kjur0/i24-project1/issues/new/choose).
+- Propozycje usprawnień dostępności zgłaszaj przez
+  [formularz dostępności](https://github.com/Kjur0/i24-project1/issues/new?template=accessibility_request.yml).
+  Bariery w istniejącym działaniu zgłaszaj jako błąd.
 - Luki w zabezpieczeniach zgłaszaj zgodnie z zasadami opisanymi w
   [polityce bezpieczeństwa](./SECURITY.md). Nie publikuj szczegółów umożliwiających
   wykorzystanie luki.

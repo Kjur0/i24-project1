@@ -1,31 +1,32 @@
-name: Bug report
-description: Report a reproducible problem in the application or repository.
-title: "[Bug]: "
+name: Zgłoszenie błędu
+description: Zgłoś problem, który można odtworzyć w aplikacji lub repozytorium.
+title: "[Błąd]: "
 type: Bug
 body:
   - type: markdown
     attributes:
       value: |
-        Before submitting, search existing issues. Never include passwords, private keys, OTP codes, or personal data.
+        Przed wysłaniem sprawdź istniejące zgłoszenia. Nie zamieszczaj haseł,
+        kluczy prywatnych, kodów OTP ani danych osobowych.
   - type: input
     id: version
     attributes:
-      label: Version or commit
-      description: Which release, branch, or commit are you using?
+      label: Wersja lub commit
+      description: Jeśli wiesz, podaj wersję, gałąź lub commit.
     validations:
-      required: true
+      required: false
   - type: textarea
     id: problem
     attributes:
-      label: What happened?
-      description: Describe the problem and its impact.
+      label: Co się stało?
+      description: Opisz problem i jego wpływ na korzystanie z aplikacji.
     validations:
       required: true
   - type: textarea
     id: reproduce
     attributes:
-      label: Steps to reproduce
-      description: List the smallest set of steps that reproduces the problem.
+      label: Kroki odtworzenia
+      description: Podaj najmniejszy zestaw kroków pozwalający odtworzyć problem.
       placeholder: |
         1. ...
         2. ...
@@ -34,13 +35,27 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: Oczekiwane zachowanie
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
-      label: Environment
-      description: Browser, operating system, and any relevant non-secret configuration.
+      label: Środowisko
+      description: Przeglądarka, system operacyjny i istotna konfiguracja bez sekretów.
+    validations:
+      required: false
+  - type: textarea
+    id: accessibility
+    attributes:
+      label: Kontekst dostępności (opcjonalnie)
+      description: Jeśli problem dotyczy dostępności, opisz używaną metodę obsługi lub technologię asystującą. Nie podawaj informacji o stanie zdrowia.
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Dodatkowe informacje (opcjonalnie)
+      description: Dodaj zrzut ekranu lub komunikat błędu po usunięciu danych poufnych.
     validations:
       required: false

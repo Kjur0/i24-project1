@@ -1,23 +1,21 @@
 ## Summary
 
-<!-- Describe the change and its scope. -->
+<!-- Explain what changed and why. Keep the linked issue as the source of truth; do not copy its full description. -->
 
 ## Progress checklist
 
-- [ ] ...
+<!-- For a draft, list only remaining work specific to this PR. Remove this section when no extra tracking is needed. Never list issue references as checkbox tasks. -->
 
 ## Validation
 
-<!-- List commands run and any manual checks. -->
+<!-- List each exact command and its result. If validation was not applicable or was not run, explain why. -->
 
-## Review checklist
+## Author checklist
 
-- [ ] I checked for secrets, credentials, OTP codes, and personal data.
-- [ ] I updated directly related documentation.
-- [ ] I tested the change or explained why testing was not applicable.
+- [ ] The changes stay within the agreed issue scope.
+- [ ] Related documentation is updated, or is not applicable.
+- [ ] I checked the changes and shared logs for secrets, OTP codes, and personal data.
 
 ## Issue closure
 
-<!-- Add `Closes #123` only for issues fully resolved by this PR. Do not repeat parent/related links already shown in GitHub's Development relationships. -->
-
-Issue lifecycle belongs in GitHub's planning-status preview, not status labels.
+<!-- Optional: add `Closes #123` only when this PR fully resolves that issue. For related or partially addressed work, use GitHub's Development relationship and leave this blank. Do not repeat issue links already shown there. -->

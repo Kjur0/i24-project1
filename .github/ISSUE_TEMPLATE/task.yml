@@ -1,0 +1,34 @@
+name: Zadanie
+description: Zgłoś pracę dokumentacyjną, utrzymaniową lub techniczną.
+title: "[Zadanie]: "
+type: Task
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Użyj tego formularza dla zaplanowanej pracy, która nie jest błędem ani
+        nową funkcją. Nie zamieszczaj sekretów ani danych osobowych.
+  - type: textarea
+    id: goal
+    attributes:
+      label: Cel
+      description: Co należy osiągnąć i dlaczego?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Zakres i kryteria akceptacji
+      description: Wypisz konkretne kroki lub rezultaty. Nie wpisuj odnośników do innych zgłoszeń jako elementów checklisty.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Ograniczenia lub dodatkowy kontekst (opcjonalnie)
+      description: Dodaj istotne informacje, które pomogą oszacować lub wykonać zadanie.
+    validations:
+      required: false

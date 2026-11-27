@@ -11,8 +11,11 @@ focused, and safe for users and maintainers.
   clear.
 - Choose the appropriate native issue type (**Bug**, **Feature**, or **Task**)
   and set **Priority** and **Effort**. The bug and feature forms assign their
-  issue types automatically. Assign active work and use the labels below for
-  area or contribution intent, not status, type, priority, or effort.
+  issue types automatically; use the Task form for documentation and
+  maintenance work. The accessibility request form uses **Feature** and adds
+  the `accessibility` label; report broken existing behavior with the Bug form.
+  Assign active work and use the labels below for area or contribution intent,
+  not status, type, priority, or effort.
 - Do not publish credentials, personal data, OTP codes, certificates, or private
   keys in issues, pull requests, logs, or commits.
 

@@ -6,12 +6,17 @@ powiększenia ekranu oraz aby odpowiadała na różne potrzeby użytkowników.
 Aplikacja nie przeszła jeszcze formalnego audytu dostępności, dlatego ten opis
 nie stanowi deklaracji zgodności z WCAG.
 
-## Zgłaszanie problemu
+## Zgłaszanie bariery lub prośby o zmianę
 
-Otwórz [zgłoszenie w repozytorium](https://github.com/Kjur0/i24-project1/issues/new).
+Jeśli istniejące działanie jest niedostępne lub zepsute, użyj
+[formularza zgłoszenia błędu](https://github.com/Kjur0/i24-project1/issues/new?template=bug_report.yml).
 Opisz stronę i działanie, których dotyczy problem, napotkaną barierę oraz — jeśli
-to możliwe — używaną technologię asystującą lub metodę obsługi. Nie podawaj
-danych osobowych ani innych informacji poufnych.
+to możliwe — używaną technologię asystującą lub metodę obsługi.
+
+Aby zaproponować usprawnienie dostępności, użyj
+[formularza prośby o poprawę dostępności](https://github.com/Kjur0/i24-project1/issues/new?template=accessibility_request.yml).
+Nie podawaj danych osobowych, informacji o stanie zdrowia ani innych informacji
+poufnych.
 
 ## Contributor checklist
 

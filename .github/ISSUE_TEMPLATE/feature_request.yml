@@ -1,36 +1,47 @@
-name: Feature request
-description: Suggest an improvement or new capability.
-title: "[Feature]: "
+name: Propozycja funkcji
+description: Zaproponuj nową funkcję lub usprawnienie.
+title: "[Funkcja]: "
 type: Feature
 body:
   - type: markdown
     attributes:
       value: |
-        Search existing issues first. Describe the user need rather than prescribing an implementation.
+        Najpierw sprawdź istniejące zgłoszenia. Opisz potrzebę użytkownika,
+        zamiast narzucać sposób implementacji.
   - type: textarea
     id: problem
     attributes:
-      label: What problem should this solve?
-      description: Explain the user need or limitation.
+      label: Jaką potrzebę lub problem rozwiązuje ta propozycja?
+      description: Opisz, komu i w jakiej sytuacji przyda się to usprawnienie.
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed outcome
-      description: Describe the behavior you would like to see.
+      label: Oczekiwany rezultat
+      description: Opisz zmianę z perspektywy użytkownika.
     validations:
       required: true
   - type: textarea
+    id: success
+    attributes:
+      label: Kryteria sukcesu
+      description: Wypisz konkretne, możliwe do sprawdzenia rezultaty. Nie dodawaj tu odnośników do innych zgłoszeń jako zadań.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: false
+  - type: textarea
     id: alternatives
     attributes:
-      label: Alternatives considered
+      label: Rozważane alternatywy (opcjonalnie)
     validations:
       required: false
   - type: textarea
     id: additional
     attributes:
-      label: Additional context
-      description: Add relevant context without including secrets or personal data.
+      label: Dodatkowy kontekst (opcjonalnie)
+      description: Nie zamieszczaj sekretów ani danych osobowych.
     validations:
       required: false
