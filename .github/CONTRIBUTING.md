@@ -167,7 +167,7 @@ latest commit, an intentionally empty signed-off commit is a valid way to
 record their final review and responsibility:
 
 ```sh
-git commit --allow-empty -S -s -m "chore: sign off on AI-assisted work"
+git commit --allow-empty -S -s -m "sign-off"
 ```
 
 The human can then push the branch; this empty sign-off commit must be the

@@ -132,7 +132,6 @@ requires MongoDB configuration and network access.
 - [Support](./.github/SUPPORT.md)
 - [Project governance](./.github/GOVERNANCE.md)
 - [Shared agent instructions](./AGENTS.md)
-- [Copilot GitHub workflow](./.github/copilot-instructions.md)
 
 ## License
 

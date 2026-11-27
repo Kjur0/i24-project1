@@ -33,26 +33,97 @@
   follow recommended compatibility fallbacks for features that are not widely
   available.
 
-## Repository operations
+## Git and GitHub operations
 
-Only the Copilot agent may perform Git or GitHub operations for this
-repository. Other agents must not run Git/GitHub commands, change repository or
-remote metadata, or create or edit issues, pull requests, comments, labels, or
-settings. They may provide proposed changes for Copilot to apply. See
-`.github/copilot-instructions.md` for the required workflow.
+All agents, including Copilot, may perform Git and GitHub operations for this
+repository when relevant and permitted by their available credentials. There
+are no agent-specific restrictions; every agent must follow the same workflow
+and preserve repository permissions and review requirements.
+
+- Before editing a branch, issue, pull request, comment, label, or setting,
+  inspect its current state with Git and/or GitHub CLI (`gh`) and preserve
+  unrelated user changes.
+- Do not merge on the owner's behalf unless explicitly authorized.
+
+### Issue and pull request workflow
+
+- For issue-scoped work, treat the issue as the source of truth for scope,
+  acceptance criteria, and decisions. Keep issue descriptions concise and
+  update them when scope changes. An unrelated pull request does not need an
+  issue.
+- Open a draft pull request as soon as the work branch has its first commit.
+  This applies to maintainer-led work as well as outside contributions. Make
+  clear in the title and summary which issue is being worked on; for
+  independent work, state that no issue applies.
+- An unassigned **Todo** issue is open for contribution; contributors do not
+  need maintainer approval before starting. **Backlog** issues are not open,
+  and assigned issues remain reserved for their assignee.
+- Maintainers are responsible for issue type, Priority, Effort, labels,
+  assignees, relationships, and development branches. They also manage pull
+  request labels, assignees, and reviewers. Do not tell contributors to set
+  these fields or change them without an explicit maintainer request.
+- Issue forms set the issue type through metadata. Keep issue titles
+  descriptive; do not add an issue-type prefix.
+- Use GitHub's **Backlog**, **Todo**, **In progress**, and **In review**
+  planning statuses, not labels, for lifecycle. GitHub automatically moves
+  an issue from Todo to In progress when an open draft PR is natively linked.
+  Contributors should mention the issue in the draft PR but must not add the
+  native Development link or a closing keyword before a maintainer confirms
+  scope and assignment. Maintainers monitor draft PRs; after confirming,
+  they assign the contributor and add the native link, moving the issue to
+  In progress.
+- For larger issues, maintainers may create an integration branch for the
+  parent issue. Branches and PRs for its sub-issues should be based on and
+  target that integration branch, not `main`. Once the parent work is
+  complete, submit its integration branch to `main`.
+- Prefer native parent/sub-issue and pull request **Development** links after
+  maintainer confirmation. Do not repeat relationships already visible in
+  GitHub unless the reference is needed for direct context.
+- Keep work-in-progress pull requests in draft. Do not wait for or treat
+  intermediate draft checks as blocking. Run relevant checks before marking a
+  PR ready and after significant changes; avoid application checks for
+  documentation-only changes. Before marking ready, ensure applicable
+  validation is complete and reported.
+- Use a closing keyword only when the PR fully resolves an issue. For partial
+  work, keep the issue open and use a native Development relationship. Do not
+  use issue-reference checkboxes to link issues. Add a concise progress
+  comment when scope or review readiness materially changes.
+- A maintainer may close a draft PR if the contribution is not wanted or is
+  out of scope. Respect the decision, and do not continue the work unless the
+  maintainer agrees on a revised scope.
+- Do not merge until required reviews and checks are satisfied. The owner
+  must explicitly authorize any merge performed on their behalf.
+
+### Commits
+
+- Commit in focused increments using a clear Conventional Commit subject.
+- Prefer `pnpm lint:fix` when fixing lint issues. Husky's pre-commit hook
+  automatically runs staged-file code and Markdown linting and formatting,
+  then full lint, typechecking, and `pnpm format:check`; do not bypass these
+  checks.
+- For substantial AI-assisted PRs, leave final review and sign-off to the
+  human contributor. Do not mark the PR ready until the human has reviewed
+  the final diff and made the final signed-off commit described in
+  [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md). Commit completed work
+  locally, then stop and wait for review without pushing. The human may
+  amend the latest unpushed agent commit or add a signed empty commit as the
+  final commit. Never perform that amendment, add a human trailer, create the
+  empty sign-off commit, push while sign-off is pending, or add a commit
+  after human sign-off. Do not amend an agent commit that has already been
+  pushed.
+- Follow the digital-signature, sign-off, and attribution requirements in
+  [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md). Do not duplicate
+  literal trailer values here.
 
 ## Agent instruction map
 
-- This root `AGENTS.md` is shared guidance for coding agents; keep framework
-  and repository-wide conventions here.
-- `.github/copilot-instructions.md` is Copilot-specific and contains the
-  permitted Git/GitHub workflow.
+- This root `AGENTS.md` is the shared source of truth for all agents,
+  including Git and GitHub workflows.
 - Skills are supplied by the agent environment. Use a relevant installed
   skill when available, but never copy skill files into this repository or
   modify the skills lock file.
-- These files are instructions, not a technical access-control mechanism.
-  Strictly preventing other agents from using Git/GitHub requires host-level
-  tool permissions and credentials to enforce the policy.
+- These instructions do not grant credentials or bypass repository
+  permissions. All agents must follow the same rules and review requirements.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
