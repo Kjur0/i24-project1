@@ -1,0 +1,45 @@
+name: Bug report
+description: Report a reproducible problem in the application or repository.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before submitting, search existing issues. Never include passwords, private keys, OTP codes, or personal data.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Which release, branch, or commit are you using?
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reproduces the problem.
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, and any relevant non-secret configuration.
+    validations:
+      required: false

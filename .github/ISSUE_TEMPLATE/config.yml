@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support and setup guidance
+    url: https://github.com/Kjur0/i24-project1/blob/main/SUPPORT.md
+    about: Read support channels and setup guidance before opening a question.
+  - name: Report a security vulnerability privately
+    url: https://github.com/Kjur0/i24-project1/security/advisories/new
+    about: Do not disclose exploitable vulnerabilities in a public issue.
