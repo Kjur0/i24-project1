@@ -67,38 +67,40 @@ concise progress comment when scope or review readiness materially changes.
 The active `MASTER` ruleset targets the default branch (`main`). It currently:
 
 - Requires pull requests, CODEOWNERS review, review-thread resolution, and
-  signed commits.
+  approval of the latest reviewable push by someone other than its pusher.
+- Dismisses stale approvals when new reviewable commits are pushed.
 - Blocks branch deletion and non-fast-forward updates.
-- Requires extra approval for unattributed changes.
+- Has zero general approving reviews. The configured extra approval for
+  unattributed changes only takes effect when a non-zero approval count is
+  required.
 - Runs CodeQL with a high-or-higher security-alert threshold and an errors
   code-scanning threshold; code-quality findings use a warning threshold.
-- Has zero required approving reviews, does not dismiss stale approvals, has no
-  required status checks, and has no bypass actors.
+- Requires `lint-and-typecheck`, `Analyze JavaScript and TypeScript`, and
+  `CodeQL` status checks, and requires the branch to be up to date.
+- Allows repository administrators to bypass rules on pull requests only.
 
-The supplied screenshots show a more restrictive proposed configuration, but
-the current active ruleset does not yet contain those changes. The screenshots
-show one approval, dismissal of stale approvals, CODEOWNERS review, approval
-of the latest reviewable push, conversation resolution, and an additional
-approval for unattributed Copilot PRs. They also show required
-`lint-and-typecheck` and `CodeQL` checks, an up-to-date branch requirement,
-and a repository-admin bypass restricted to pull requests.
+The supplied screenshots showed one general approval, while the owner selected
+zero. The other pictured review, bypass, check, and scanning settings are now
+active as listed above. The ruleset's extra approval for unattributed Copilot
+changes remains configured, but has no effect while the general approval count
+is zero.
 
-For that proposed setup:
+For this setup:
 
 - **Repository-admin bypass, pull requests only** keeps changes on the PR
   path and in the audit trail while allowing an administrator to explicitly
   bypass review/check rules when necessary. **Always** would also allow direct
   pushes that bypass the PR gate.
-- **One approval, stale-review dismissal, CODEOWNERS, and latest-push
-  approval** provide meaningful review for external PRs. The sole maintainer
-  cannot approve their own PR; a PR-only admin bypass is the practical escape
-  hatch unless a second eligible reviewer is added.
+- **CODEOWNERS, stale-review dismissal, and latest-push approval** provide
+  review safeguards without a general approval count. The latest-push rule
+  independently requires another person to approve the newest reviewable push.
+  The sole maintainer cannot approve their own PR; a PR-only admin bypass is
+  the practical escape hatch unless a second eligible reviewer is added.
 - **`lint-and-typecheck`** runs the repository's ESLint and TypeScript checks.
-  The CodeQL workflow's job is named **Analyze JavaScript and TypeScript**;
-  requiring that job ensures the analysis workflow completes. The separate
-  **CodeQL** security result is governed by the code-scanning thresholds.
-  Requiring both the workflow job and the result gate protects against both
-  failed analysis and threshold-exceeding findings.
+  The CodeQL workflow's job is named **Analyze JavaScript and TypeScript**.
+  The required **CodeQL** check confirms the security analysis result, which
+  is also governed by the code-scanning thresholds. Requiring all three checks
+  covers CI, successful analysis execution, and the uploaded security result.
 - The **`github-advanced-security`** check observed on some PRs comes from a
   dynamic Copilot code-scanning workflow, not the repository's stable CI or
   CodeQL workflow; do not make that transient check a required status.
@@ -121,15 +123,13 @@ For that proposed setup:
   errors. Code coverage and automatic Copilot review are disabled in the
   screenshots.
 
-Recommended ruleset policy:
+Ruleset policy:
 
-1. Keep one active ruleset for `main`; use the proposed PR-only administrator
-   bypass and review requirements if they match the owner's intended workflow.
-2. Require `lint-and-typecheck`, the **Analyze JavaScript and TypeScript**
-   workflow result, and CodeQL security results at the chosen threshold.
-   Avoid requiring transient Copilot checks or Dependabot as baseline checks.
+1. Keep the active `MASTER` ruleset as the single ruleset for `main`.
+2. Keep the three stable required checks; avoid requiring transient Copilot
+   checks or Dependabot as baseline checks.
 3. Keep pull-request review, conversation resolution, signed commits, branch
-   deletion protection, and force-push protection enabled.
+   deletion protection, force-push protection, and the PR-only admin bypass.
 4. No release-tag ruleset is currently needed if the project will not publish
    releases. No additional feature-branch ruleset is needed for this GitHub
    Flow.
