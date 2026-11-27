@@ -1,63 +1,73 @@
-# Database model
+---
+Assignment: 1
+---
 
-The application stores three MongoDB collections in the `webmaster` database:
-`users`, `posts`, and `sessions`. MongoDB adds an `_id` field of type `ObjectId`
-to each stored document.
+# Model danych
 
-The TypeScript shapes below are defined in [`types/user.ts`](../types/user.ts),
-[`types/post.ts`](../types/post.ts), and
-[`types/session.ts`](../types/session.ts).
+Aplikacja przechowuje dane w bazie MongoDB `webmaster`, w trzech kolekcjach:
+`users`, `posts` i `sessions`. MongoDB nadaje każdemu dokumentowi pole `_id`
+typu `ObjectId`.
 
-## Users
+## Użytkownicy — `users`
 
-Each user document contains:
+| Pole           | Typ                                | Opis                                                            |
+| -------------- | ---------------------------------- | --------------------------------------------------------------- |
+| `_id`          | `ObjectId`                         | Identyfikator dokumentu nadawany przez MongoDB.                 |
+| `email`        | `string`                           | Adres e-mail użytkownika.                                       |
+| `username`     | `string`                           | Nazwa wyświetlana użytkownika.                                  |
+| `role`         | `"user" \| "moderator" \| "admin"` | Rola konta.                                                     |
+| `verified`     | `boolean`                          | Informacja, czy adres e-mail został zweryfikowany.              |
+| `createdAt`    | `Date`                             | Data utworzenia konta.                                          |
+| `authn`        | `userAuthn[]`                      | Zarejestrowane klucze dostępu; pusta tablica, jeśli ich nie ma. |
+| `avatar`       | `string` (opcjonalne)              | Adres lub identyfikator awatara.                                |
+| `otp`          | `userOTP` (opcjonalne)             | Dane aktywnego jednorazowego kodu.                              |
+| `pendingEmail` | `string` (opcjonalne)              | Nowy adres e-mail oczekujący na potwierdzenie.                  |
 
-| Field          | Type                               | Notes                                                 |
-| -------------- | ---------------------------------- | ----------------------------------------------------- |
-| `email`        | `string`                           | User email address.                                   |
-| `username`     | `string`                           | Display name.                                         |
-| `role`         | `"user" \| "admin" \| "moderator"` | Authorization role.                                   |
-| `verified`     | `boolean`                          | Whether the email address is verified.                |
-| `createdAt`    | `Date`                             | Account creation time.                                |
-| `authn`        | `userAuthn[]`                      | Registered passkeys; empty when none are registered.  |
-| `avatar`       | `string` (optional)                | Avatar URL or identifier.                             |
-| `otp`          | `userOTP` (optional)               | One-time-code hash, attempt count, and creation time. |
-| `pendingEmail` | `string` (optional)                | Email awaiting confirmation during an email change.   |
+Element `userAuthn` opisuje klucz dostępu:
 
-`userAuthn` stores a credential ID, display name, base64url-encoded public key,
-signature counter, device type, backup state, transport hints, and creation
-time. `userOTP` stores the code hash, failed-attempt count, and creation time;
-the plaintext code is not stored in this collection.
+| Pole         | Typ                    | Opis                                                   |
+| ------------ | ---------------------- | ------------------------------------------------------ |
+| `id`         | `string`               | Identyfikator poświadczenia WebAuthn.                  |
+| `name`       | `string`               | Nazwa klucza nadana przez użytkownika.                 |
+| `publicKey`  | `string`               | Klucz publiczny zapisany w kodowaniu base64url.        |
+| `counter`    | `number`               | Licznik podpisów poświadczenia.                        |
+| `deviceType` | `CredentialDeviceType` | Typ urządzenia określony przez WebAuthn.               |
+| `backedUp`   | `boolean`              | Informacja, czy poświadczenie jest kopiowane zapasowo. |
+| `transports` | `string[]`             | Dostępne transporty poświadczenia.                     |
+| `createdAt`  | `Date`                 | Data rejestracji klucza.                               |
 
-## Posts and embedded comments
+Element `userOTP` zawiera `hash: string`, `attempts: number` i
+`createdAt: Date`. W bazie przechowywany jest skrót kodu, nie jego jawna
+wartość.
 
-Each post document contains:
+## Wpisy i komentarze — `posts`
 
-| Field       | Type                   | Notes                                   |
-| ----------- | ---------------------- | --------------------------------------- |
-| `title`     | `string`               | Post title.                             |
-| `content`   | `string`               | Post body.                              |
-| `author`    | `ObjectId`             | Reference to the author in `users`.     |
-| `createdAt` | `Date`                 | Post creation time.                     |
-| `comments`  | `comment[]` (optional) | Comments embedded in the post document. |
+| Pole        | Typ                      | Opis                                            |
+| ----------- | ------------------------ | ----------------------------------------------- |
+| `_id`       | `ObjectId`               | Identyfikator dokumentu nadawany przez MongoDB. |
+| `title`     | `string`                 | Tytuł wpisu.                                    |
+| `content`   | `string`                 | Treść wpisu.                                    |
+| `author`    | `ObjectId`               | Identyfikator autora w kolekcji `users`.        |
+| `createdAt` | `Date`                   | Data utworzenia wpisu.                          |
+| `comments`  | `comment[]` (opcjonalne) | Komentarze osadzone w dokumencie wpisu.         |
 
-Each embedded comment contains `content: string`, `author: ObjectId`, and
-`createdAt: Date`; it may also contain `title: string`. Comments are not
-recursive and are not stored in a separate collection.
+Komentarz zawiera `content: string`, `author: ObjectId` i `createdAt: Date`;
+pole `title: string` jest opcjonalne. Komentarze nie są rekurencyjne i nie mają
+osobnej kolekcji.
 
-## Sessions
+## Sesje — `sessions`
 
-Each session document contains:
+| Pole        | Typ        | Opis                                                                         |
+| ----------- | ---------- | ---------------------------------------------------------------------------- |
+| `_id`       | `ObjectId` | Identyfikator dokumentu nadawany przez MongoDB.                              |
+| `user`      | `ObjectId` | Identyfikator użytkownika w kolekcji `users`.                                |
+| `token`     | `string`   | Skrót SHA-256 tokenu sesji; jawny token znajduje się w ciasteczku HTTP-only. |
+| `createdAt` | `Date`     | Data utworzenia sesji.                                                       |
+| `expiresAt` | `Date`     | Data wygaśnięcia sesji.                                                      |
 
-| Field       | Type       | Notes                                                                            |
-| ----------- | ---------- | -------------------------------------------------------------------------------- |
-| `user`      | `ObjectId` | Reference to the user in `users`.                                                |
-| `token`     | `string`   | SHA-256 hash of the session token; the raw token is held in an HTTP-only cookie. |
-| `createdAt` | `Date`     | Session creation time.                                                           |
-| `expiresAt` | `Date`     | Session expiration time.                                                         |
+## Różnice względem pierwotnego modelu
 
-## Not implemented
-
-The earlier project brief described user ratings, but there is no rating field
-in the current user or post types. Ratings should not be assumed to exist in
-the database.
+Obecny model nie zawiera pól `idp` ani `currentRating`. Logowanie wykorzystuje
+adres e-mail z kodem jednorazowym lub klucz dostępu. Oceny strony nie są
+zapisywane w bazie. Komentarze są częścią dokumentu wpisu, a nie osobnymi,
+rekurencyjnymi dokumentami.
