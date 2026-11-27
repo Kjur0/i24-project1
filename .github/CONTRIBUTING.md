@@ -56,16 +56,18 @@ Before marking a code-changing pull request ready for review, run:
 pnpm lint:fix
 pnpm typecheck
 pnpm format
+pnpm build
 ```
 
 For documentation-only changes, code linting and typechecking may not be
 applicable; CI still runs Markdown linting and formatting checks for supported
-files, including YAML formatting. Do not hold intermediate draft work for
-checks. Run relevant checks before marking the PR ready and after significant
-changes. There is not currently an automated test script. If a change requires
-MongoDB or browser authentication, describe how you tested it and what
-services or environment values were needed. Keep development OTP values out
-of published logs and screenshots.
+files, including YAML formatting. CI also runs the production build for code
+and configuration changes. Do not hold intermediate draft work for checks.
+Run relevant checks before marking the PR ready and after significant changes.
+There is not currently an automated test script. If a change requires MongoDB
+or browser authentication, describe how you tested it and what services or
+environment values were needed. Keep development OTP values out of published
+logs and screenshots.
 
 For UI changes, use the [accessibility guidance for contributors](./ACCESSIBILITY.md)
 as a review checklist.
