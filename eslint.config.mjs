@@ -1,3 +1,4 @@
+import markdown from "@eslint/markdown"
 import shadcn from "@shadcn/lint"
 import tsParser from "@typescript-eslint/parser"
 import nextVitals from "eslint-config-next/core-web-vitals"
@@ -9,6 +10,14 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   eslintConfigPrettier,
+  {
+    files: ["**/*.md"],
+    plugins: { markdown },
+    extends: ["markdown/recommended"],
+    rules: {
+      "markdown/no-missing-label-refs": "off",
+    },
+  },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
     languageOptions: {

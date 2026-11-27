@@ -63,6 +63,10 @@ changes. Do not merge on the owner's behalf unless explicitly authorized.
 ## Commits
 
 - Commit in focused increments using a clear Conventional Commit subject.
+- Prefer `pnpm lint:fix` when fixing lint issues. Husky's pre-commit hook
+  automatically runs staged-file code and Markdown linting and formatting,
+  then full lint, typechecking, and `pnpm format:check`; do not bypass these
+  checks.
 - Follow the digital-signature, sign-off, and attribution requirements in
   [CONTRIBUTING.md](./CONTRIBUTING.md). Do not duplicate literal trailer
   values here.

@@ -7,8 +7,12 @@
     "dev": "next dev --experimental-https --hostname localhost",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "lint:code": "eslint \"**/*.{js,jsx,ts,tsx,mjs,cjs}\"",
+    "lint": "pnpm lint:code && pnpm lint:markdown",
+    "lint:fix": "eslint --fix \"**/*.{js,jsx,ts,tsx,mjs,cjs}\" \"**/*.md\"",
+    "lint:markdown": "eslint \"**/*.md\"",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,mjs,cjs,md,yml,yaml,json}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,mjs,cjs,md,yml,yaml,json}\"",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
@@ -33,6 +37,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/markdown": "^9.0.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@shadcn/lint": "^0.2.5",
     "@tailwindcss/postcss": "^4.3.5",
@@ -51,11 +56,15 @@
     "typescript": "^5.9.3"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
+    "**/*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",
       "prettier --write --ignore-unknown"
     ],
-    "**/!(*.js|*.jsx|*.ts|*.tsx)": "prettier --write --ignore-unknown"
+    "**/*.md": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
+    ],
+    "**/!(*.js|*.jsx|*.ts|*.tsx|*.mjs|*.cjs|*.md)": "prettier --write --ignore-unknown"
   },
   "packageManager": "pnpm@12.21.0",
   "engines": {

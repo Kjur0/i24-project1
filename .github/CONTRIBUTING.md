@@ -36,22 +36,36 @@ responsibilities, see [Project governance](./GOVERNANCE.md).
 Follow the setup instructions in the [README](../README.md). The project uses
 Node.js `26.11.1` or a compatible later 26.x release and pnpm `12.21.0`.
 
+### Pre-commit checks
+
+The `prepare` script installs Husky hooks during `pnpm install`. Before each
+commit, the hook uses `lint-staged` to lint and format staged files, then runs
+`pnpm lint`, `pnpm typecheck`, and `pnpm format:check` across the repository.
+This includes code and Markdown linting plus Prettier formatting checks for
+supported files, including Markdown and YAML. Do not bypass these checks.
+
+When fixing lint issues locally, prefer `pnpm lint:fix`; CI uses
+`pnpm lint:code` and `pnpm lint:markdown` to check without changing files.
+`pnpm format` writes Prettier formatting changes to code and documentation
+files. CI uses `pnpm format:check` to check supported files without modifying
+them.
+
 Before marking a code-changing pull request ready for review, run:
 
 ```sh
-pnpm lint
+pnpm lint:fix
 pnpm typecheck
 pnpm format
 ```
 
-`pnpm format` writes formatting changes to TypeScript and TSX files. For
-documentation-only changes, application linting and typechecking are not
-applicable; check formatting for the changed documentation instead. Do not
-hold intermediate draft work for checks. Run the relevant checks before
-marking the PR ready and after significant changes. There is not currently an
-automated test script. If a change requires MongoDB or browser authentication,
-describe how you tested it and what services or environment values were
-needed. Keep development OTP values out of published logs and screenshots.
+For documentation-only changes, code linting and typechecking may not be
+applicable; CI still runs Markdown linting and formatting checks for supported
+files, including YAML formatting. Do not hold intermediate draft work for
+checks. Run relevant checks before marking the PR ready and after significant
+changes. There is not currently an automated test script. If a change requires
+MongoDB or browser authentication, describe how you tested it and what
+services or environment values were needed. Keep development OTP values out
+of published logs and screenshots.
 
 For UI changes, use the [accessibility guidance for contributors](./ACCESSIBILITY.md)
 as a review checklist.
