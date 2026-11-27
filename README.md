@@ -6,12 +6,11 @@ webmaster.rip to polskojęzyczny serwis społecznościowy do dzielenia się opin
 o stronie internetowej Technikum nr 1 (TM1). To repozytorium zawiera aplikację
 opartą na Next.js.
 
-## Aktualny stan
+## Funkcje
 
-Projekt jest wczesnym prototypem. Obecna wersja obsługuje wpisy i komentarze,
-logowanie za pomocą jednorazowego kodu powiązanego z adresem e-mail, klucze
-dostępu, profile i ustawienia użytkowników oraz narzędzia administratorów i
-moderatorów.
+Projekt jest ukończony. Aplikacja obsługuje wpisy i komentarze, logowanie za
+pomocą jednorazowego kodu powiązanego z adresem e-mail, klucze dostępu, profile
+i ustawienia użytkowników oraz narzędzia administratorów i moderatorów.
 
 ## Technology
 
@@ -112,10 +111,8 @@ properly issued certificates in production.
 
 ### Email and OTP delivery
 
-There is currently no email provider configured. The app generates one-time
-codes and writes them to the server log for development; this is not suitable
-for a public production deployment. Email delivery and safe production OTP
-handling still need to be implemented.
+No email provider is configured. The application currently writes generated
+one-time codes to the server log rather than delivering them by email.
 
 ## Useful commands
 

@@ -20,8 +20,8 @@ Please include the affected version or commit, the impact, and concise
 reproduction details. The maintainer will review the report and coordinate a
 fix and disclosure; response times are not guaranteed.
 
-## Deployment warning
+## OTP handling
 
-The current application logs generated OTP codes and has no email delivery
-provider. Do not expose this prototype as a production authentication service
-until OTP delivery and operational security controls are implemented.
+The application logs generated OTP codes and does not deliver them by email.
+Keep server logs access-controlled and do not share live codes in public
+discussions or support requests.

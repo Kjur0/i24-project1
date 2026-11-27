@@ -1,6 +1,6 @@
 # Pomoc
 
-webmaster.rip to wczesny prototyp rozwijany w miarę dostępnych możliwości.
+Projekt webmaster.rip jest ukończony.
 
 - Błędy, pomysły na funkcje i bariery dostępności zgłaszaj, otwierając
   [zgłoszenie w repozytorium](https://github.com/Kjur0/i24-project1/issues/new).

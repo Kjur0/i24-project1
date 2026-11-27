@@ -7,8 +7,8 @@ Assignment: 0
 ## Cel projektu
 
 webmaster.rip to serwis opinii i komentarzy dotyczących strony internetowej
-Technikum nr 1 (TM1). Aplikacja jest prototypem. Poniższy opis przedstawia jej
-obecny stan, a nie funkcje planowane lub niezrealizowane.
+Technikum nr 1 (TM1). Projekt jest ukończony; poniższy opis podsumowuje
+dostępne funkcje aplikacji.
 
 ## Obecnie dostępne funkcje
 
@@ -16,9 +16,8 @@ obecny stan, a nie funkcje planowane lub niezrealizowane.
 - Zalogowani użytkownicy mogą tworzyć wpisy i dodawać do nich komentarze.
 - Autor może edytować i usuwać własne wpisy oraz komentarze.
 - Moderatorzy i administratorzy mogą usuwać dowolne wpisy i komentarze.
-- Rejestracja i logowanie za pomocą jednorazowego kodu powiązanego z adresem
-  e-mail, a także weryfikacja adresu e-mail. Kod nie jest obecnie wysyłany
-  pocztą — trafia do logu serwera.
+- Logowanie i weryfikacja adresu e-mail za pomocą jednorazowego kodu. Aplikacja
+  nie wysyła kodów pocztą; zapisuje je w logu serwera.
 - Rejestracja i logowanie za pomocą kluczy dostępu (WebAuthn/passkeys).
 - Profile użytkowników oraz ustawienia profilu i metod logowania.
 - Panel administratora do zarządzania kontami użytkowników.
@@ -31,13 +30,10 @@ obecny stan, a nie funkcje planowane lub niezrealizowane.
 | `moderator` | Moderowanie wpisów i komentarzy; edycja podstawowych danych profili użytkowników niebędących administratorami. |
 | `admin`     | Moderowanie treści oraz zarządzanie kontami, adresami e-mail i rolami użytkowników.                            |
 
-## Ograniczenia i stan niezrealizowanych funkcji
+## Obsługa poczty elektronicznej
 
-- Nie skonfigurowano dostawcy poczty. Jednorazowe kody są obecnie zapisywane
-  w logach serwera na potrzeby developmentu; nie jest to bezpieczny sposób
-  dostarczania kodów w produkcji.
-- Aplikacji nie należy traktować jako gotowego do produkcyjnego wdrożenia
-  systemu uwierzytelniania.
+Dostawca poczty elektronicznej nie jest skonfigurowany. Jednorazowe kody są
+zapisywane w logu serwera i nie są dostarczane użytkownikom pocztą.
 
 ## Technologie i przechowywanie danych
 
