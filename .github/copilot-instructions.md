@@ -51,9 +51,8 @@ current state with GitHub CLI (`gh`) and preserve unrelated user changes.
 ## Repository guidance
 
 Follow the shared implementation guidance in the root `AGENTS.md` and the
-human contribution process in `CONTRIBUTING.md`. Maintainer decisions and
-verified GitHub settings are documented in
-`docs/maintainers/github-governance.md`.
+human contribution process in `.github/CONTRIBUTING.md`. Maintainer decisions
+and verified GitHub settings are documented in `.github/GOVERNANCE.md`.
 
 Do not commit environment-managed skills or edit `skills-lock.json` or
 `.agents/skills/`.

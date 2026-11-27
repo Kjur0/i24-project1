@@ -132,11 +132,12 @@ MongoDB configuration and network access.
 
 - [Project specification](./docs/SPEC.md)
 - [Database model](./docs/dbMODEL.md)
-- [Contributing](./CONTRIBUTING.md)
-- [Accessibility](./ACCESSIBILITY.md)
-- [Security policy](./SECURITY.md)
-- [Support](./SUPPORT.md)
-- [GitHub governance and maintainer settings](./docs/maintainers/github-governance.md)
+- [Accessibility](./docs/ACCESSIBILITY.md)
+- [Contributing](./.github/CONTRIBUTING.md)
+- [Code of conduct](./.github/CODE_OF_CONDUCT.md)
+- [Security policy](./.github/SECURITY.md)
+- [Support](./.github/SUPPORT.md)
+- [GitHub governance and maintainer settings](./.github/GOVERNANCE.md)
 - [Shared agent instructions](./AGENTS.md)
 - [Copilot GitHub workflow](./.github/copilot-instructions.md)
 

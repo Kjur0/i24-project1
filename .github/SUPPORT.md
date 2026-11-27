@@ -7,7 +7,7 @@ Projekt webmaster.rip jest ukończony.
 - Luki w zabezpieczeniach zgłaszaj zgodnie z zasadami opisanymi w
   [polityce bezpieczeństwa](./SECURITY.md). Nie publikuj szczegółów umożliwiających
   wykorzystanie luki.
-- Informacje o konfiguracji znajdziesz w pliku [README](./README.md) i
+- Informacje o konfiguracji znajdziesz w pliku [README](../README.md) i
   istniejących zgłoszeniach.
 
 Opisz problem na tyle dokładnie, aby można go było zrozumieć. Przed udostępnieniem
