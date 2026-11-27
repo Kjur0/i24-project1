@@ -19,10 +19,9 @@ brief is not implemented in the current app.
 
 ## Requirements
 
-- Node.js 26. The metadata currently conflicts: `package.json` requires
-  `^26.13.1`, while `pnpm-workspace.yaml` and `devEngines.runtime` specify
-  `26.11.1`. CI uses `26.13.1` to satisfy `package.json`; resolve the mismatch
-  with maintainers before changing the runtime.
+- Node.js `26.11.1` or a later compatible release in the 26.x line. The
+  `package.json`, `devEngines.runtime`, and `pnpm-workspace.yaml` runtime
+  declarations are aligned.
 - pnpm `12.21.0` (the version pinned in `package.json`)
 - A MongoDB deployment accessible from this machine
 - OpenSSL to generate a local OTP salt
@@ -38,18 +37,14 @@ pnpm install --frozen-lockfile
 cp .env.example .env.local
 ```
 
-Edit `.env.local` as described below. The checked-in `pnpm dev` command uses
-the hostname `asus.jurkowski.net.pl`, which only works where that name resolves
-to the development machine. For a portable local setup, start the app with:
+Edit `.env.local` as described below, then start the app:
 
 ```sh
-pnpm exec next dev --experimental-https --hostname localhost
+pnpm dev
 ```
 
 Open [https://localhost:3000](https://localhost:3000). Next.js generates a
-development certificate for HTTPS; your browser may ask you to trust it. If
-using `pnpm dev`, open `https://asus.jurkowski.net.pl:3000` and set
-`APP_DOMAIN` and `APP_ORIGIN` to match.
+development certificate for HTTPS; your browser may ask you to trust it.
 
 ## Environment configuration
 
@@ -82,18 +77,15 @@ openssl rand -base64 32
 Copy the output into `OTP_SALT` in `.env.local`. Keep it stable for the
 environment and do not share or commit it.
 
-For passkeys on the portable `localhost` setup, the example environment file
-sets:
+For passkeys, the example environment file sets:
 
 ```dotenv
 APP_DOMAIN=localhost
 APP_ORIGIN=https://localhost:3000
 ```
 
-`APP_ORIGIN` must exactly match the origin shown in the browser. If using the
-checked-in `pnpm dev` host, set `APP_DOMAIN=asus.jurkowski.net.pl` and
-`APP_ORIGIN=https://asus.jurkowski.net.pl:3000`. In production, set both values
-to the deployed application's hostname and HTTPS origin.
+`APP_ORIGIN` must exactly match the origin shown in the browser. In production,
+set both values to the deployed application's hostname and HTTPS origin.
 
 ### Certificates
 
@@ -123,15 +115,14 @@ handling still need to be implemented.
 
 ## Useful commands
 
-| Command                                                        | Description                                                                   |
-| -------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `pnpm dev`                                                     | Start HTTPS using the repository-configured hostname `asus.jurkowski.net.pl`. |
-| `pnpm lint`                                                    | Run ESLint.                                                                   |
-| `pnpm exec tsc --noEmit`                                       | Run the TypeScript compiler without emitting files.                           |
-| `pnpm exec next dev --experimental-https --hostname localhost` | Start HTTPS on portable localhost.                                            |
-| `pnpm build`                                                   | Create a production build.                                                    |
-| `pnpm start`                                                   | Serve a previously built production app.                                      |
-| `pnpm exec prettier --check .`                                 | Check formatting with Prettier.                                               |
+| Command                        | Description                                         |
+| ------------------------------ | --------------------------------------------------- |
+| `pnpm dev`                     | Start the HTTPS development server on `localhost`.  |
+| `pnpm lint`                    | Run ESLint.                                         |
+| `pnpm exec tsc --noEmit`       | Run the TypeScript compiler without emitting files. |
+| `pnpm build`                   | Create a production build.                          |
+| `pnpm start`                   | Serve a previously built production app.            |
+| `pnpm exec prettier --check .` | Check formatting with Prettier.                     |
 
 There is no automated test script yet. Lint and typecheck do not need a
 reachable database; running the app requires MongoDB configuration and network

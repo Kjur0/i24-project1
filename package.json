@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https --hostname asus.jurkowski.net.pl",
+    "dev": "next dev --experimental-https --hostname localhost",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -61,7 +61,7 @@
   "engines": {
     "runtime": {
       "name": "node",
-      "version": "^26.13.1",
+      "version": "^26.11.1",
       "onFail": "download"
     }
   },

@@ -15,9 +15,8 @@ focused, and safe for users and maintainers.
 ## Development setup
 
 Follow the setup instructions in the [README](./README.md). The project uses
-pnpm `12.21.0`. Node.js metadata currently conflicts: `package.json` requires
-`^26.13.1`, while the workspace and `devEngines.runtime` specify `26.11.1`.
-CI uses Node.js `26.13.1` to satisfy `package.json`.
+Node.js `26.11.1` or a compatible later 26.x release and pnpm `12.21.0`. CI
+currently uses Node.js `26.13.1`.
 
 Before opening a pull request, run:
 
