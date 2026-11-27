@@ -15,13 +15,15 @@ focused, and safe for users and maintainers.
 ## Development setup
 
 Follow the setup instructions in the [README](./README.md). The project uses
-Node.js `26.11.1` and pnpm `12.21.0`.
+pnpm `12.21.0`. Node.js metadata currently conflicts: `package.json` requires
+`^26.13.1`, while the workspace and `devEngines.runtime` specify `26.11.1`.
+CI uses Node.js `26.13.1` to satisfy `package.json`.
 
 Before opening a pull request, run:
 
 ```sh
 pnpm lint
-pnpm typecheck
+pnpm exec tsc --noEmit
 ```
 
 There is not currently an automated test script. If a change requires MongoDB
@@ -46,9 +48,9 @@ logs and screenshots.
 
 ## Review and project status
 
-The GitHub issue planning-status preview is used for work status: Backlog, Todo,
-In progress, In review, Done, Not planned, and Duplicate. Do not create labels
-to represent those statuses. Labels are for topic/category triage.
+Use GitHub's planning-status preview for work status: Backlog, Todo, In
+progress, and In review. Do not create labels to represent those statuses.
+Labels are for topic/category triage.
 
 Please respond to review feedback and keep the issue checklist and pull request
 description in sync as scope changes.
