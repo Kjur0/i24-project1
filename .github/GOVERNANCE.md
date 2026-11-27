@@ -103,6 +103,13 @@ For that proposed setup:
   dynamic Copilot code-scanning workflow, not the repository's stable CI or
   CodeQL workflow; do not make that transient check a required status.
   Dependabot is dependency-update automation, not a required baseline check.
+- Both workflows explicitly handle `ready_for_review` and skip their jobs for
+  draft PRs. CI's lightweight change detector skips lint and typechecking for
+  documentation-only PRs; GitHub treats the skipped required job as successful.
+  CodeQL still runs for every non-draft PR because the active code-scanning
+  result threshold needs an analysis result. Avoid workflow-level path filters,
+  which can leave required checks pending. A maintainer can manually dispatch
+  CI for a significant change on a draft PR.
 - **Require branches to be up to date** means the PR must include current
   `main` and its checks must pass against that updated code. **Do not require
   status checks on creation** allows a repository or branch to be created
@@ -133,6 +140,11 @@ GitHub aggregates overlapping rulesets and applies the most restrictive
 version of each rule, so avoid duplicate rules targeting `main`.
 
 ## Security and automation settings
+
+The repository's pull-request creation cap is enabled at **two open PRs** and
+does not count drafts. This cap applies to contributors without write access.
+The selected exemption after one merged PR still needs verification in the
+repository settings; the REST API does not expose that exemption.
 
 Verified repository settings include Dependabot security updates, secret
 scanning, push protection, and private vulnerability reporting. Scanning for
