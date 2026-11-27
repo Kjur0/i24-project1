@@ -42,6 +42,17 @@ organization that operates the affected service. This policy covers the
 webmaster.rip repository and software maintained here; it does not authorize
 testing external providers.
 
+## Commit-signing and post-quantum policy
+
+Project commits must have signatures verified by GitHub. SSH signing is
+permitted only with a post-quantum or hybrid algorithm supported by GitHub;
+until then, use an eligible GPG key. GPG signing keys must expire before 2035
+(preferably by 2030) or use a post-quantum or hybrid algorithm supported by
+GitHub. S/MIME signatures are not accepted for project commits. Keep private
+signing keys secure, and revoke or rotate a key promptly if it may have been
+exposed. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the complete signing,
+sign-off, and attribution requirements.
+
 ## Sensitive data and one-time codes
 
 The application currently writes generated one-time sign-in codes to server

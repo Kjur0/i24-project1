@@ -35,9 +35,10 @@ project uses its built-in statuses rather than labels to show lifecycle:
 - **Backlog** means the work has not been selected and prepared for
   contribution. Do not start it without maintainer agreement.
 - **Todo** means maintainers have selected and prepared the work. An
-  **unassigned Todo** issue is the only status that signals work is open for
-  contributors to request. Ask a maintainer before starting; maintainers
-  confirm scope and assignment.
+  **unassigned Todo** issue is open for contribution. Contributors may start
+  without prior maintainer approval and should open a draft PR after the first
+  commit. Maintainers monitor these drafts and confirm scope and assignment
+  afterward.
 - **In progress** and **In review** indicate that work is already underway or
   being reviewed. Do not start a parallel contribution unless a maintainer
   invites you.
@@ -46,11 +47,13 @@ An assigned issue or pull request is reserved for its assignee, regardless of
 its status. Do not take over assigned work without the assignee's or a
 maintainer's agreement.
 
-GitHub may update statuses automatically: assigning a person can move an
-issue from Backlog to Todo; linking a draft pull request can move it to In
-progress; and linking or marking a pull request ready for review can move it
-to In review. Maintainers keep the status and assignment aligned with actual
-progress.
+GitHub automatically moves an issue to **In progress** when a draft PR is
+natively linked. To keep the issue in **Todo** until a maintainer confirms
+scope and assignment, contributors should mention the issue in the draft PR
+but leave the native Development relationship unset. After confirmation, the
+maintainer assigns the contributor and creates that relationship. GitHub
+automatically advances the issue to **In progress**. A ready-for-review PR
+can move a linked issue to **In review**.
 
 ## Pull request review and merging
 
@@ -60,10 +63,17 @@ truth for scope and acceptance criteria.
 
 Every contribution must be visible in a draft pull request while work is in
 progress. Open one as soon as the work branch has its first commit, including
-for maintainer-led work. The title, summary, and native relationship should
-make the issue being worked on clear; for independent work, say that no issue
-applies. Keep the pull request in draft until it is complete and ready for
-review.
+for maintainer-led work. The title and summary should identify the issue being
+worked on; for independent work, say that no issue applies. Keep the pull
+request in draft until it is complete and ready for review. Add the native
+Development relationship only after a maintainer confirms scope and
+assignment.
+
+For larger issues, maintainers may create an integration branch for the
+parent issue. Contributors working on its sub-issues create branches from
+that integration branch and target their pull requests to it, not to `main`.
+The integration branch is proposed to `main` when the parent issue's work is
+complete.
 
 Use a closing keyword such as `Closes #123` when a pull request fully resolves
 an issue. Do not use a closing keyword for partial work. Maintainers manage
@@ -94,10 +104,20 @@ Maintainers are expected to:
 - communicate material changes in scope or review readiness; and
 - handle security reports privately under the [security policy](./SECURITY.md).
 
+### Commit signing and post-quantum readiness
+
+The project requires GitHub-verified signatures on commits and uses a
+post-quantum-conscious signing policy. SSH signing is permitted only with a
+post-quantum or hybrid algorithm supported by GitHub; otherwise, use an
+eligible GPG key. GPG signing keys must expire before 2035 (preferably by 2030) or use a post-quantum or hybrid algorithm supported by GitHub. S/MIME
+signatures are not permitted. Maintainers revisit this policy as GitHub's
+supported signature algorithms evolve. See [CONTRIBUTING.md](./CONTRIBUTING.md)
+for the full commit-signing and attribution guidance.
+
 ## Contributor expectations
 
 Contributors should use the appropriate issue form, avoid sharing secrets or
-personal information, ask before taking assigned or Backlog work, and follow
-the review and validation guidance in [CONTRIBUTING.md](./CONTRIBUTING.md).
+personal information, avoid taking assigned or Backlog work without agreement,
+and follow the review and validation guidance in [CONTRIBUTING.md](./CONTRIBUTING.md).
 Human contributors remain responsible for any work they submit, including
 work produced with coding agents.

@@ -5,19 +5,24 @@ respectful, focused, and safe for users and maintainers.
 
 ## Before you start
 
-- Check for an existing issue before starting substantial work. Agree on the
-  scope in an issue when the change is related to tracked work.
+- Check for an existing issue before starting substantial work. For
+  issue-scoped work, follow the scope and acceptance criteria recorded there.
+  An unassigned **Todo** issue is open for contribution; you do not need
+  approval before starting. Do not start **Backlog** work or work assigned to
+  someone else.
 - Every contribution must be visible in a draft pull request while work is in
   progress. Open it as soon as the work branch has its first commit; this
-  applies to maintainer-led work as well as outside contributions.
+  applies to maintainer-led work as well as outside contributions. Maintainers
+  monitor draft PRs and confirm scope and assignment after they are opened.
 - Use the issue form that best matches the report. Maintainers classify issues
   and manage their labels, issue types, priority, effort, assignees,
   relationships, and development branches. Contributors do not need to set
   those fields or apply labels.
 - You do not need to create an issue for an unrelated pull request.
-- Make the work being done clear in the draft pull request. Link the issue
-  when the change is issue-scoped; for independent work, say that it is
-  unrelated to an issue.
+- Make the work being done clear in the draft pull request and mention the
+  issue it addresses. Do not add a native Development link or closing keyword
+  until a maintainer confirms the scope and assignment. For independent work,
+  say that no issue applies.
 - Issues and pull requests with an assignee are reserved for that person.
   Do not begin work on them unless a maintainer invites you to collaborate.
 - Do not publish credentials, personal data, OTP codes, certificates, or
@@ -55,22 +60,31 @@ as a review checklist.
 
 Follow [GitHub flow](https://docs.github.com/get-started/using-github/github-flow):
 
-1. For issue-related work, confirm the scope before implementation and use the
-   issue as the source of truth for acceptance criteria. No issue is required
-   for independent work.
-2. Create a short-lived topic branch from `main`; keep unrelated work on
-   separate branches.
+1. For issue-related work, use the issue as the source of truth for scope and
+   acceptance criteria. Anyone may start an unassigned **Todo** issue without
+   prior approval. Wait for maintainer agreement before starting **Backlog**
+   work or work assigned to someone else. No issue is required for independent
+   work.
+2. Create a short-lived topic branch from `main` for standalone work. For a
+   larger issue, maintainers may create an integration branch for the parent
+   issue; branches and PRs for its sub-issues should be based on and target
+   that branch, not `main`. The completed integration branch is then proposed
+   for `main`.
 3. Make the first focused commit, then open a draft pull request promptly.
    Keep it in draft while implementation is in progress, and update it as the
    work changes.
-4. Make the pull request title and summary identify the work. Link its issue
-   through GitHub's native Development relationship, or state that the work is
-   independent when no issue applies.
-5. If the pull request fully resolves an issue, include a closing keyword such
-   as `Closes #123`. For partial or related work, do not claim that the issue
-   will close; maintainers can create the appropriate native Development
-   relationship. Do not duplicate issue relationships in checkbox lists.
-6. Run the relevant checks before marking the pull request ready for review.
+4. Make the pull request title and summary identify the work and mention its
+   issue. For independent work, say that no issue applies. Do not create a
+   native Development link or add a closing keyword yet: GitHub automatically
+   moves an issue to **In progress** when a draft PR is linked.
+5. Maintainers monitor draft PRs. After confirming the scope and assignment,
+   they assign the contributor and create the native Development relationship;
+   the issue then moves to **In progress**.
+6. If the pull request fully resolves an issue, include a closing keyword such
+   as `Closes #123` after that confirmation. For partial work, do not claim
+   that the issue will close. Do not duplicate issue relationships in
+   checkbox lists.
+7. Run the relevant checks before marking the pull request ready for review.
    Respond to review feedback and keep the branch current. Maintainers manage
    PR labels, assignees, reviewers, issue relationships, and merging.
 

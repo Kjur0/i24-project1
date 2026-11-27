@@ -1,32 +1,31 @@
-name: Propozycja funkcji
-description: Zaproponuj nową funkcję lub usprawnienie.
-title: "[Funkcja]: "
+name: Feature request
+description: Propose a new feature or improvement.
 type: Feature
 body:
   - type: markdown
     attributes:
       value: |
-        Najpierw sprawdź istniejące zgłoszenia. Opisz potrzebę użytkownika,
-        zamiast narzucać sposób implementacji.
+        Search existing issues first. Describe the user need rather than
+        prescribing an implementation.
   - type: textarea
     id: problem
     attributes:
-      label: Jaką potrzebę lub problem rozwiązuje ta propozycja?
-      description: Opisz, komu i w jakiej sytuacji przyda się to usprawnienie.
+      label: What need or problem would this proposal address?
+      description: Describe who would benefit and in what situation.
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Oczekiwany rezultat
-      description: Opisz zmianę z perspektywy użytkownika.
+      label: Desired outcome
+      description: Describe the change from the user's perspective.
     validations:
       required: true
   - type: textarea
     id: success
     attributes:
-      label: Kryteria sukcesu
-      description: Wypisz konkretne, możliwe do sprawdzenia rezultaty. Nie dodawaj tu odnośników do innych zgłoszeń jako zadań.
+      label: Success criteria
+      description: List concrete, verifiable outcomes. Do not use links to other issues as checklist tasks.
       placeholder: |
         - [ ] ...
         - [ ] ...
@@ -35,13 +34,13 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: Rozważane alternatywy (opcjonalnie)
+      label: Alternatives considered (optional)
     validations:
       required: false
   - type: textarea
     id: additional
     attributes:
-      label: Dodatkowy kontekst (opcjonalnie)
-      description: Nie zamieszczaj sekretów ani danych osobowych.
+      label: Additional context (optional)
+      description: Do not include secrets or personal data.
     validations:
       required: false

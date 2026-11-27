@@ -21,19 +21,30 @@ changes. Do not merge on the owner's behalf unless explicitly authorized.
   This applies to maintainer-led work as well as outside contributions. Make
   clear in the title and summary which issue is being worked on; for
   independent work, state that no issue applies.
+- An unassigned **Todo** issue is open for contribution; contributors do not
+  need maintainer approval before starting. **Backlog** issues are not open,
+  and assigned issues remain reserved for their assignee.
 - Maintainers are responsible for issue type, Priority, Effort, labels,
   assignees, relationships, and development branches. They also manage pull
   request labels, assignees, and reviewers. Do not tell contributors to set
   these fields or change them without an explicit maintainer request.
+- Issue forms set the issue type through metadata. Keep issue titles
+  descriptive; do not add an issue-type prefix.
 - Use GitHub's **Backlog**, **Todo**, **In progress**, and **In review**
-  planning statuses, not labels, for lifecycle. An unassigned **Todo** issue
-  is the signal that work is ready to be requested; assigned issues and PRs
-  are reserved for their assignees. GitHub may advance status when a person is
-  assigned or when a linked draft/ready PR changes state. Confirm native
-  relationships before changing status manually.
-- Prefer native parent/sub-issue and pull request **Development** links. Do
-  not repeat relationships already visible in GitHub unless the reference is
-  needed for direct context.
+  planning statuses, not labels, for lifecycle. GitHub automatically moves
+  an issue from Todo to In progress when an open draft PR is natively linked.
+  Contributors should mention the issue in the draft PR but must not add the
+  native Development link or a closing keyword before a maintainer confirms
+  scope and assignment. Maintainers monitor draft PRs; after confirming,
+  they assign the contributor and add the native link, moving the issue to
+  In progress.
+- For larger issues, maintainers may create an integration branch for the
+  parent issue. Branches and PRs for its sub-issues should be based on and
+  target that integration branch, not `main`. Once the parent work is
+  complete, submit its integration branch to `main`.
+- Prefer native parent/sub-issue and pull request **Development** links after
+  maintainer confirmation. Do not repeat relationships already visible in
+  GitHub unless the reference is needed for direct context.
 - Keep work-in-progress pull requests in draft. Do not wait for or treat
   intermediate draft checks as blocking. Run relevant checks before marking a
   PR ready and after significant changes; avoid application checks for

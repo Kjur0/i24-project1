@@ -1,6 +1,5 @@
-name: Prośba o poprawę dostępności
-description: Zaproponuj usprawnienie dostępności istniejącej funkcji.
-title: "[Dostępność]: "
+name: Accessibility improvement
+description: Suggest an accessibility improvement to an existing feature.
 type: Feature
 labels:
   - accessibility
@@ -8,35 +7,35 @@ body:
   - type: markdown
     attributes:
       value: |
-        Ten formularz służy do propozycji usprawnień. Jeśli istniejące działanie
-        jest niedostępne lub zepsute, użyj formularza zgłoszenia błędu. Nie
-        podawaj danych osobowych ani informacji o stanie zdrowia.
+        Use this form to suggest an improvement. If existing behavior is
+        inaccessible or broken, use the bug report form. Do not share personal
+        data, diagnoses, or health information.
   - type: textarea
     id: affected
     attributes:
-      label: Która strona, funkcja lub czynność wymaga poprawy?
-      description: Podaj miejsce i opisz, co próbujesz zrobić.
+      label: Which page, feature, or task needs improvement?
+      description: Identify where the issue occurs and what you are trying to do.
     validations:
       required: true
   - type: textarea
     id: barrier
     attributes:
-      label: Jaki problem, ograniczenie lub potrzeba dostępnościowa występuje?
-      description: Opisz sytuację bez ujawniania prywatnych informacji.
+      label: What accessibility barrier or limitation are you encountering?
+      description: Describe the situation without sharing private information.
     validations:
       required: true
   - type: textarea
     id: outcome
     attributes:
-      label: Oczekiwany rezultat
-      description: Jak aplikacja powinna zachowywać się po wprowadzeniu poprawy?
+      label: Desired outcome
+      description: How should the application behave after the improvement?
     validations:
       required: true
   - type: textarea
     id: criteria
     attributes:
-      label: Kryteria sukcesu
-      description: Wypisz rezultaty, po których będzie można sprawdzić, czy bariera została usunięta.
+      label: Success criteria
+      description: List observable results that would show the barrier has been removed.
       placeholder: |
         - [ ] ...
         - [ ] ...
@@ -45,7 +44,7 @@ body:
   - type: textarea
     id: assistive_technology
     attributes:
-      label: Metoda obsługi lub technologia asystująca (opcjonalnie)
-      description: Na przykład klawiatura, powiększenie albo czytnik ekranu. Nie podawaj diagnozy ani informacji o stanie zdrowia.
+      label: Input method or assistive technology (optional)
+      description: For example, keyboard, magnification, or a screen reader. Do not share a diagnosis or health information.
     validations:
       required: false

@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Pomoc i konfiguracja
+  - name: Help and setup
     url: https://github.com/Kjur0/i24-project1/blob/main/.github/SUPPORT.md
-    about: Przeczytaj informacje o pomocy i konfiguracji przed wysłaniem pytania.
-  - name: Prywatne zgłoszenie problemu bezpieczeństwa
+    about: Read the support and setup information before asking a question.
+  - name: Private vulnerability report
     url: https://github.com/Kjur0/i24-project1/security/advisories/new
-    about: Nie zgłaszaj luk w zabezpieczeniach w publicznym issue ani pull requeście.
+    about: Do not report security vulnerabilities in a public issue or pull request.
